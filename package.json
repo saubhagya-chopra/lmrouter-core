@@ -1,0 +1,26 @@
+{
+  "name": "lmrouter-core",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/LMRouter/lmrouter-core#readme",
+  "bugs": {
+    "url": "https://github.com/LMRouter/lmrouter-core/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LMRouter/lmrouter-core.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
