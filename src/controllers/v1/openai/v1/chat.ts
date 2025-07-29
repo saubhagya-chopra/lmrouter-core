@@ -31,7 +31,20 @@ export const createChatCompletion = async (req: Request, res: Response) => {
 
     try {
       const completion = await openai.chat.completions.create(reqBody);
-      res.status(200).json(completion);
+      if (req.body.stream !== true) {
+        res.status(200).json(completion);
+        return;
+      }
+
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+
+      for await (const chunk of completion as any) {
+        res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+      }
+
+      res.end();
       return;
     } catch (e) {
       error = e;
