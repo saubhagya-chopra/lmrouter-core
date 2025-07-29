@@ -1,0 +1,40 @@
+server:
+  host: 127.0.0.1
+  port: 3000
+  logging: dev
+
+access_keys:
+  - sk-example-key-1
+  - sk-example-key-2
+
+providers:
+  openai:
+    api_key: sk-openai-api-key
+  anthropic:
+    base_url: https://api.anthropic.com/v1
+    api_key: sk-anthropic-api-key
+  google:
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai
+    api_key: sk-google-api-key
+
+models:
+  openai/gpt-4o:
+    providers:
+      - provider: openai
+        model: gpt-4o
+  openai/gpt-image-1:
+    providers:
+      - provider: openai
+        model: gpt-image-1
+  openai/text-embedding-3-large:
+    providers:
+      - provider: openai
+        model: text-embedding-3-large
+  anthropic/claude-sonnet-4:
+    providers:
+      - provider: anthropic
+        model: claude-sonnet-4-0
+  google/gemini-2.5-flash:
+    providers:
+      - provider: google
+        model: gemini-2.5-flash
