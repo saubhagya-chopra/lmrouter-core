@@ -66,3 +66,67 @@ export const createChatCompletion = async (req: Request, res: Response) => {
     },
   });
 };
+
+export const createResponse = async (req: Request, res: Response) => {
+  const cfg = getConfig();
+  const model = cfg.models[req.body.model];
+  if (!model) {
+    return res.status(404).json({
+      error: {
+        message: "Model not found",
+      },
+    });
+  }
+
+  let error: any = null;
+  for (const provider of model.providers) {
+    const providerCfg = cfg.providers[provider.provider];
+    if (!providerCfg) {
+      continue;
+    }
+
+    const openai = new OpenAI({
+      baseURL: providerCfg.base_url,
+      apiKey: providerCfg.api_key,
+    });
+
+    const reqBody = { ...req.body };
+    reqBody.model = provider.model;
+
+    try {
+      const response = await openai.responses.create(reqBody);
+      if (req.body.stream !== true) {
+        res.status(200).json(response);
+        return;
+      }
+
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+
+      for await (const chunk of response as any) {
+        res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+      }
+
+      res.end();
+      return;
+    } catch (e) {
+      error = e;
+      if (cfg.server.logging === "dev") {
+        console.error(error);
+      }
+    }
+  }
+
+  if (error) {
+    return res.status(error.status).json({
+      error: error.error,
+    });
+  }
+
+  return res.status(500).json({
+    error: {
+      message: "All providers failed to complete the request",
+    },
+  });
+};

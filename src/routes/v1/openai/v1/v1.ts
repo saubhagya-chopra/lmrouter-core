@@ -1,6 +1,9 @@
 import { Router } from "express";
 
-import { createChatCompletion } from "../../../../controllers/v1/openai/v1/chat.js";
+import {
+  createChatCompletion,
+  createResponse,
+} from "../../../../controllers/v1/openai/v1/chat.js";
 import { createEmbeddings } from "../../../../controllers/v1/openai/v1/embeddings.js";
 import {
   editImage,
@@ -18,6 +21,7 @@ openaiV1Router.get("/models", listModels);
 openaiV1Router.get("/models/*model", getModel);
 
 openaiV1Router.post("/chat/completions", auth, createChatCompletion);
+openaiV1Router.post("/responses", auth, createResponse);
 
 openaiV1Router.post("/images/generations", auth, generateImage);
 openaiV1Router.post("/images/edits", auth, editImage);
