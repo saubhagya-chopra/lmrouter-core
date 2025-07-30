@@ -1,5 +1,14 @@
 import { Request, Response } from "express";
 import OpenAI from "openai";
+import { Stream } from "openai/core/streaming";
+import {
+  ChatCompletionChunk,
+  ChatCompletionCreateParamsBase,
+} from "openai/resources/chat/completions";
+import {
+  ResponseCreateParamsBase,
+  ResponseStreamEvent,
+} from "openai/resources/responses/responses";
 
 import { getConfig } from "../../../../utils/config.js";
 
@@ -26,12 +35,12 @@ export const createChatCompletion = async (req: Request, res: Response) => {
       apiKey: providerCfg.api_key,
     });
 
-    const reqBody = { ...req.body };
+    const reqBody = { ...req.body } as ChatCompletionCreateParamsBase;
     reqBody.model = provider.model;
 
     try {
       const completion = await openai.chat.completions.create(reqBody);
-      if (req.body.stream !== true) {
+      if (reqBody.stream !== true) {
         res.status(200).json(completion);
         return;
       }
@@ -40,7 +49,7 @@ export const createChatCompletion = async (req: Request, res: Response) => {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      for await (const chunk of completion as any) {
+      for await (const chunk of completion as Stream<ChatCompletionChunk>) {
         res.write(`data: ${JSON.stringify(chunk)}\n\n`);
       }
 
@@ -90,12 +99,12 @@ export const createResponse = async (req: Request, res: Response) => {
       apiKey: providerCfg.api_key,
     });
 
-    const reqBody = { ...req.body };
+    const reqBody = { ...req.body } as ResponseCreateParamsBase;
     reqBody.model = provider.model;
 
     try {
       const response = await openai.responses.create(reqBody);
-      if (req.body.stream !== true) {
+      if (reqBody.stream !== true) {
         res.status(200).json(response);
         return;
       }
@@ -104,7 +113,7 @@ export const createResponse = async (req: Request, res: Response) => {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      for await (const chunk of response as any) {
+      for await (const chunk of response as Stream<ResponseStreamEvent>) {
         res.write(`data: ${JSON.stringify(chunk)}\n\n`);
       }
 
