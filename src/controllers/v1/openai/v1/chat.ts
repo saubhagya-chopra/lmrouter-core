@@ -18,13 +18,21 @@ import { getConfig } from "../../../../utils/config.js";
 
 export const createChatCompletion = async (req: Request, res: Response) => {
   const cfg = getConfig();
-  const model = cfg.models[req.body.model];
+  let model = cfg.models[req.body.model];
   if (!model) {
-    return res.status(404).json({
-      error: {
-        message: "Model not found",
-      },
-    });
+    if (!cfg.models["*"]) {
+      return res.status(404).json({
+        error: {
+          message: "Model not found",
+        },
+      });
+    }
+    model = {
+      providers: cfg.models["*"].providers.map((provider) => ({
+        provider: provider.provider,
+        model: req.body.model,
+      })),
+    };
   }
 
   let error: any = null;

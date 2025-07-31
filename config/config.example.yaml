@@ -18,6 +18,10 @@ providers:
     type: openai
     base_url: https://generativelanguage.googleapis.com/v1beta/openai
     api_key: sk-google-api-key
+  openrouter:
+    type: openai
+    base_url: https://openrouter.ai/api/v1
+    api_key: sk-openrouter-api-key
 
 models:
   openai/gpt-4o:
@@ -41,3 +45,7 @@ models:
     providers:
       - provider: google
         model: gemini-2.5-flash
+  "*":
+    providers:
+      - provider: openrouter
+        model: ""
