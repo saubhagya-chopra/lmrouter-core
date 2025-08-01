@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import openaiV1Router from "./v1/v1.js";
+import openaiV1Router from "./v1.js";
 
 const openaiRouter = Router();
 
