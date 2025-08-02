@@ -14,13 +14,17 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     });
   }
 
-  const cfg = getConfig();
-  if (!cfg.access_keys.includes(apiKey)) {
-    return res.status(401).json({
-      error: {
-        message: "Invalid API key",
-      },
-    });
+  if (apiKey.startsWith("BYOK:")) {
+    req.byok = apiKey.slice(5);
+  } else {
+    const cfg = getConfig();
+    if (!cfg.access_keys.includes(apiKey)) {
+      return res.status(401).json({
+        error: {
+          message: "Invalid API key",
+        },
+      });
+    }
   }
 
   next();

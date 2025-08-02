@@ -54,7 +54,7 @@ export const createChatCompletion = async (req: Request, res: Response) => {
       if (providerCfg.type !== "anthropic") {
         const openai = new OpenAI({
           baseURL: providerCfg.base_url,
-          apiKey: providerCfg.api_key,
+          apiKey: req.byok ?? providerCfg.api_key,
         });
 
         const completion = await openai.chat.completions.create(reqBody);
@@ -78,7 +78,7 @@ export const createChatCompletion = async (req: Request, res: Response) => {
 
       const anthropic = new Anthropic({
         baseURL: providerCfg.base_url,
-        apiKey: providerCfg.api_key,
+        apiKey: req.byok ?? providerCfg.api_key,
       });
 
       const completion = await anthropic.messages.create(
@@ -153,7 +153,7 @@ export const createResponse = async (req: Request, res: Response) => {
 
     const openai = new OpenAI({
       baseURL: providerCfg.base_url,
-      apiKey: providerCfg.api_key,
+      apiKey: req.byok ?? providerCfg.api_key,
     });
 
     const reqBody = { ...req.body } as ResponseCreateParamsBase;

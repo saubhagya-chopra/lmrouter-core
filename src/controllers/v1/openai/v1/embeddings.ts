@@ -23,7 +23,7 @@ export const createEmbeddings = async (req: Request, res: Response) => {
 
     const openai = new OpenAI({
       baseURL: providerCfg.base_url,
-      apiKey: providerCfg.api_key,
+      apiKey: req.byok ?? providerCfg.api_key,
     });
 
     const reqBody = { ...req.body };
