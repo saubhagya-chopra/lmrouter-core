@@ -4,6 +4,7 @@ import {
   ImageBlockParam,
   Message,
   MessageCreateParamsBase,
+  MessageDeltaUsage,
   RawMessageStreamEvent,
   StopReason,
   Tool,
@@ -215,7 +216,8 @@ export const chatCompletionAdapters = {
         type: "message",
         usage: {
           cache_creation_input_tokens: null,
-          cache_read_input_tokens: null,
+          cache_read_input_tokens:
+            response.usage?.prompt_tokens_details?.cached_tokens ?? null,
           input_tokens: response.usage?.prompt_tokens ?? 0,
           output_tokens: response.usage?.completion_tokens ?? 0,
           server_tool_use: null,
@@ -240,6 +242,13 @@ export const chatCompletionAdapters = {
       let state = State.Init;
       let blockCount = 0;
       let stopReason: StopReason | null = null;
+      const usage: MessageDeltaUsage = {
+        cache_creation_input_tokens: null,
+        cache_read_input_tokens: null,
+        input_tokens: 0,
+        output_tokens: 0,
+        server_tool_use: null,
+      };
 
       for await (const chunk of stream) {
         if (chunk.choices[0].finish_reason) {
@@ -254,6 +263,14 @@ export const chatCompletionAdapters = {
                   : chunk.choices[0].finish_reason === "content_filter"
                     ? "refusal"
                     : null;
+        }
+        if (chunk.usage) {
+          usage.input_tokens = chunk.usage.prompt_tokens;
+          usage.output_tokens = chunk.usage.completion_tokens;
+          usage.cache_read_input_tokens =
+            chunk.usage.prompt_tokens_details?.cached_tokens ?? null;
+        }
+        if (Object.keys(chunk.choices[0].delta).length === 0) {
           continue;
         }
         if (state == State.Init) {
@@ -376,13 +393,7 @@ export const chatCompletionAdapters = {
             stop_reason: stopReason,
             stop_sequence: null,
           },
-          usage: {
-            cache_creation_input_tokens: null,
-            cache_read_input_tokens: null,
-            input_tokens: 0,
-            output_tokens: 0,
-            server_tool_use: null,
-          },
+          usage,
         };
         yield {
           type: "message_stop",
@@ -597,6 +608,9 @@ export const chatCompletionAdapters = {
           prompt_tokens: response.usage.input_tokens,
           total_tokens:
             response.usage.output_tokens + response.usage.input_tokens,
+          prompt_tokens_details: {
+            cached_tokens: response.usage.cache_read_input_tokens ?? undefined,
+          },
         },
       };
     },
@@ -624,6 +638,7 @@ export const chatCompletionAdapters = {
             : messageStart?.usage.service_tier === "priority"
               ? "priority"
               : null,
+        usage: null,
       });
       for await (const event of stream) {
         if (event.type === "message_start") {
@@ -689,6 +704,20 @@ export const chatCompletionAdapters = {
                   ? "content_filter"
                   : "stop";
           yield chunk;
+          const chunk2 = getCleanChunk();
+          chunk2.choices = [];
+          chunk2.usage = {
+            completion_tokens: event.usage.output_tokens,
+            prompt_tokens: messageStart?.usage.input_tokens ?? 0,
+            total_tokens:
+              event.usage.output_tokens +
+              (messageStart?.usage.input_tokens ?? 0),
+            prompt_tokens_details: {
+              cached_tokens:
+                messageStart?.usage.cache_read_input_tokens ?? undefined,
+            },
+          };
+          yield chunk2;
         }
       }
     },
