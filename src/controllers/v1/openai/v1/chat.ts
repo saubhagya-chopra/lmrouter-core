@@ -121,7 +121,7 @@ export const createChatCompletion = async (req: Request, res: Response) => {
   }
 
   if (error) {
-    return res.status(error.status).json({
+    return res.status(error.status || 500).json({
       error: error.error,
     });
   }
@@ -186,7 +186,7 @@ export const createResponse = async (req: Request, res: Response) => {
   }
 
   if (error) {
-    return res.status(error.status).json({
+    return res.status(error.status || 500).json({
       error: error.error,
     });
   }
