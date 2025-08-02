@@ -44,6 +44,11 @@ export const createChatCompletion = async (req: Request, res: Response) => {
 
     const reqBody = { ...req.body } as ChatCompletionCreateParamsBase;
     reqBody.model = provider.model;
+    if (reqBody.stream === true) {
+      reqBody.stream_options = {
+        include_usage: true,
+      };
+    }
 
     try {
       if (providerCfg.type !== "anthropic") {

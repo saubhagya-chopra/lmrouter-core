@@ -509,6 +509,11 @@ export const chatCompletionAdapters = {
             : undefined,
         stop: request.stop_sequences,
         stream: request.stream,
+        stream_options: request.stream
+          ? {
+              include_usage: true,
+            }
+          : undefined,
         temperature: request.temperature,
         tool_choice:
           request.tool_choice?.type === "auto"
