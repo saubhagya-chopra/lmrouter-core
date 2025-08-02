@@ -251,7 +251,7 @@ export const chatCompletionAdapters = {
       };
 
       for await (const chunk of stream) {
-        if (chunk.choices[0].finish_reason) {
+        if (chunk.choices.length > 0 && chunk.choices[0].finish_reason) {
           stopReason =
             chunk.choices[0].finish_reason === "stop"
               ? "end_turn"
@@ -270,7 +270,10 @@ export const chatCompletionAdapters = {
           usage.cache_read_input_tokens =
             chunk.usage.prompt_tokens_details?.cached_tokens ?? null;
         }
-        if (Object.keys(chunk.choices[0].delta).length === 0) {
+        if (
+          chunk.choices.length === 0 ||
+          Object.keys(chunk.choices[0].delta).length === 0
+        ) {
           continue;
         }
         if (state == State.Init) {
