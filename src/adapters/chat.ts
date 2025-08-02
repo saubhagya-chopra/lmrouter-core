@@ -313,6 +313,22 @@ export const chatCompletionAdapters = {
                 input: {},
               },
             };
+            if (
+              typeof chunk.choices[0].delta.tool_calls[0].function
+                ?.arguments === "string" &&
+              chunk.choices[0].delta.tool_calls[0].function?.arguments.length >
+                0
+            ) {
+              yield {
+                type: "content_block_delta",
+                index: blockCount,
+                delta: {
+                  type: "input_json_delta" as const,
+                  partial_json:
+                    chunk.choices[0].delta.tool_calls[0].function.arguments,
+                },
+              };
+            }
             state = State.SendingToolUse;
           } else {
             yield {
@@ -324,6 +340,19 @@ export const chatCompletionAdapters = {
                 citations: null,
               },
             };
+            if (
+              typeof chunk.choices[0].delta.content === "string" &&
+              chunk.choices[0].delta.content.length > 0
+            ) {
+              yield {
+                type: "content_block_delta",
+                index: blockCount,
+                delta: {
+                  type: "text_delta" as const,
+                  text: chunk.choices[0].delta.content,
+                },
+              };
+            }
             state = State.SendingText;
           }
         } else if (state == State.SendingText) {
@@ -343,6 +372,22 @@ export const chatCompletionAdapters = {
                 input: {},
               },
             };
+            if (
+              typeof chunk.choices[0].delta.tool_calls[0].function
+                ?.arguments === "string" &&
+              chunk.choices[0].delta.tool_calls[0].function?.arguments.length >
+                0
+            ) {
+              yield {
+                type: "content_block_delta",
+                index: blockCount,
+                delta: {
+                  type: "input_json_delta" as const,
+                  partial_json:
+                    chunk.choices[0].delta.tool_calls[0].function.arguments,
+                },
+              };
+            }
             state = State.SendingToolUse;
           } else {
             yield {
@@ -381,6 +426,19 @@ export const chatCompletionAdapters = {
                 citations: null,
               },
             };
+            if (
+              typeof chunk.choices[0].delta.content === "string" &&
+              chunk.choices[0].delta.content.length > 0
+            ) {
+              yield {
+                type: "content_block_delta",
+                index: blockCount,
+                delta: {
+                  type: "text_delta" as const,
+                  text: chunk.choices[0].delta.content,
+                },
+              };
+            }
             state = State.SendingText;
           }
         }
