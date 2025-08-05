@@ -54,12 +54,10 @@ responsesRouter.post("/", async (c) => {
       return streamSSE(c, async (stream) => {
         for await (const chunk of response as OpenAIStream<ResponseStreamEvent>) {
           await stream.writeSSE({
+            event: chunk.type,
             data: JSON.stringify(chunk),
           });
         }
-        await stream.writeSSE({
-          data: "[DONE]",
-        });
       });
     } catch (e) {
       error = e;
