@@ -87,6 +87,7 @@ chatRouter.post("/completions", async (c) => {
       const anthropic = new Anthropic({
         baseURL: providerCfg.base_url,
         apiKey: c.var.byok ?? providerCfg.api_key,
+        timeout: 3600000,
       });
 
       const completion = await anthropic.messages.create(
