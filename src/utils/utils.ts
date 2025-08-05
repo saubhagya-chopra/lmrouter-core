@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 LMRouter Contributors
+
 export const getUptime = () => {
   const seconds = Math.floor(process.uptime());
   const minutes = Math.floor(seconds / 60);

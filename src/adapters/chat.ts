@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 LMRouter Contributors
+
 import { Stream as AnthropicStream } from "@anthropic-ai/sdk/core/streaming";
 import type {
   ContentBlock,

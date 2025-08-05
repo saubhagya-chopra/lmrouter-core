@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 LMRouter Contributors
+
 import fs from "fs";
 
 import type { Context } from "hono";

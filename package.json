@@ -1,8 +1,8 @@
 {
   "name": "lmrouter-core",
-  "version": "1.0.0",
-  "description": "",
-  "homepage": "https://github.com/LMRouter/lmrouter-core#readme",
+  "version": "0.1.0",
+  "description": "LMRouter Core",
+  "homepage": "https://lmrouter.com/",
   "bugs": {
     "url": "https://github.com/LMRouter/lmrouter-core/issues"
   },
@@ -10,8 +10,8 @@
     "type": "git",
     "url": "git+https://github.com/LMRouter/lmrouter-core.git"
   },
-  "license": "ISC",
-  "author": "",
+  "license": "MIT",
+  "author": "LMRouter Contributors",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 LMRouter Contributors
+
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import OpenAI from "openai";

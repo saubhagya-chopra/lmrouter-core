@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 LMRouter Contributors
+
 import { Hono } from "hono";
 
 import openaiV1Router from "./openai/v1.js";
