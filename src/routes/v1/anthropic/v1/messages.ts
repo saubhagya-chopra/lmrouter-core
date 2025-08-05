@@ -22,7 +22,7 @@ messagesRouter.use(auth);
 
 messagesRouter.post("/", async (c) => {
   const body = await c.req.json();
-  const cfg = getConfig();
+  const cfg = getConfig(c);
   let model = cfg.models[body.model];
   if (!model) {
     if (!cfg.models["*"]) {

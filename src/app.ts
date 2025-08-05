@@ -8,7 +8,6 @@ import { getConfig } from "./utils/config.js";
 import { getUptime } from "./utils/utils.js";
 
 const app = new Hono<Context>();
-const cfg = getConfig();
 
 app.use(logger());
 app.use(cors());
@@ -25,6 +24,7 @@ app.route("/v1", v1Router);
 
 app.onError((err, c) => {
   console.error(err.stack);
+  const cfg = getConfig(c);
   return c.json(
     {
       error: {

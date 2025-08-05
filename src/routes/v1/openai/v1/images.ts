@@ -11,7 +11,7 @@ imagesRouter.use(auth);
 
 imagesRouter.post("/generations", async (c) => {
   const body = await c.req.json();
-  const cfg = getConfig();
+  const cfg = getConfig(c);
   const model = cfg.models[body.model];
   if (!model) {
     return c.json(
@@ -71,7 +71,7 @@ imagesRouter.post("/generations", async (c) => {
 
 imagesRouter.post("/edits", async (c) => {
   const body = await c.req.json();
-  const cfg = getConfig();
+  const cfg = getConfig(c);
   const model = cfg.models[body.model];
   if (!model) {
     return c.json(

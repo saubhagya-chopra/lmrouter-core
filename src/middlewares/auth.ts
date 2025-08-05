@@ -20,7 +20,7 @@ export const auth = createMiddleware<Context>(async (c, next) => {
   if (apiKey.startsWith("BYOK:")) {
     c.set("byok", apiKey.slice(5));
   } else {
-    const cfg = getConfig();
+    const cfg = getConfig(c);
     if (!cfg.access_keys.includes(apiKey)) {
       return c.json(
         {

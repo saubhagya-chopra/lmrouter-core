@@ -1,5 +1,6 @@
 import fs from "fs";
 
+import type { Context } from "hono";
 import yaml from "yaml";
 
 interface LMRouterCoreConfigServer {
@@ -35,8 +36,15 @@ interface LMRouterCoreConfig {
 
 let configCache: LMRouterCoreConfig | null = null;
 
-export const getConfig = (): LMRouterCoreConfig => {
+export const getConfig = (c?: Context): LMRouterCoreConfig => {
   if (configCache) {
+    return configCache;
+  }
+
+  if (c?.env.CONFIG) {
+    configCache = yaml.parse(
+      Buffer.from(c.env.CONFIG, "base64").toString("utf8"),
+    ) as LMRouterCoreConfig;
     return configCache;
   }
 

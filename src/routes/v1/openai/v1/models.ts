@@ -6,7 +6,7 @@ import { getConfig } from "../../../../utils/config.js";
 const modelsRouter = new Hono<Context>();
 
 modelsRouter.get("/:model{.+}", (c) => {
-  const cfg = getConfig();
+  const cfg = getConfig(c);
   const modelName = c.req.param("model");
   const model = cfg.models[modelName];
   if (!model) {
@@ -29,7 +29,7 @@ modelsRouter.get("/:model{.+}", (c) => {
 });
 
 modelsRouter.get("/", (c) => {
-  const cfg = getConfig();
+  const cfg = getConfig(c);
   const models = Object.entries(cfg.models).map(([name, model]) => {
     return {
       id: name,

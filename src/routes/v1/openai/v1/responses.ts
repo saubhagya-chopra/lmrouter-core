@@ -17,7 +17,7 @@ responsesRouter.use(auth);
 
 responsesRouter.post("/", async (c) => {
   const body = await c.req.json();
-  const cfg = getConfig();
+  const cfg = getConfig(c);
   const model = cfg.models[body.model];
   if (!model) {
     return c.json(
