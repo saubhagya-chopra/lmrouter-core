@@ -19,7 +19,7 @@ import type {
 import { chatCompletionAdapters } from "../../../../adapters/chat.js";
 import { auth } from "../../../../middlewares/auth.js";
 import type { Context } from "../../../../types/hono.js";
-import { getConfig } from "../../../../utils/config.js";
+import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
 
 const chatRouter = new Hono<Context>();
 
@@ -27,95 +27,44 @@ chatRouter.use(auth);
 
 chatRouter.post("/completions", async (c) => {
   const body = await c.req.json();
-  const cfg = getConfig(c);
-  let model = cfg.models[body.model];
+  const model = getModel(body.model, c);
   if (!model) {
-    if (!cfg.models["*"]) {
-      return c.json(
-        {
-          error: {
-            message: "Model not found",
-          },
+    return c.json(
+      {
+        error: {
+          message: "Model not found",
         },
-        404,
-      );
-    }
-    model = {
-      providers: cfg.models["*"].providers.map((provider) => ({
-        provider: provider.provider,
-        model: body.model,
-      })),
-    };
+      },
+      404,
+    );
   }
 
-  let error: any = null;
-  for (const provider of model.providers) {
-    const providerCfg = cfg.providers[provider.provider];
-    if (!providerCfg) {
-      continue;
-    }
-
+  return await iterateModelProviders(model, c, async (modelName, provider) => {
     const reqBody = { ...body } as ChatCompletionCreateParamsBase;
-    reqBody.model = provider.model;
+    reqBody.model = modelName;
     if (reqBody.stream === true) {
       reqBody.stream_options = {
         include_usage: true,
       };
     }
 
-    try {
-      if (providerCfg.type !== "anthropic") {
-        const openai = new OpenAI({
-          baseURL: providerCfg.base_url,
-          apiKey: c.var.byok ?? providerCfg.api_key,
-          defaultHeaders: {
-            "HTTP-Referer": "https://lmrouter.com/",
-            "X-Title": "LMRouter",
-          },
-        });
-
-        const completion = await openai.chat.completions.create(reqBody);
-        if (reqBody.stream !== true) {
-          return c.json(completion);
-        }
-
-        return streamSSE(c, async (stream) => {
-          for await (const chunk of completion as OpenAIStream<ChatCompletionChunk>) {
-            await stream.writeSSE({
-              data: JSON.stringify(chunk),
-            });
-          }
-          await stream.writeSSE({
-            data: "[DONE]",
-          });
-        });
-      }
-
-      const anthropic = new Anthropic({
-        baseURL: providerCfg.base_url,
-        apiKey: c.var.byok ?? providerCfg.api_key,
-        timeout: 3600000,
+    if (provider.type !== "anthropic") {
+      const openai = new OpenAI({
+        baseURL: provider.base_url,
+        apiKey: provider.api_key,
+        defaultHeaders: {
+          "HTTP-Referer": "https://lmrouter.com/",
+          "X-Title": "LMRouter",
+        },
       });
 
-      const completion = await anthropic.messages.create(
-        chatCompletionAdapters.openai.requestToAnthropic(
-          reqBody,
-          model.max_tokens,
-        ),
-      );
-
+      const completion = await openai.chat.completions.create(reqBody);
       if (reqBody.stream !== true) {
-        return c.json(
-          chatCompletionAdapters.anthropic.responseToOpenai(
-            completion as Message,
-          ),
-        );
+        return c.json(completion);
       }
 
       return streamSSE(c, async (stream) => {
-        for await (const chunk of chatCompletionAdapters.anthropic.streamToOpenai(
-          completion as AnthropicStream<RawMessageStreamEvent>,
-        )) {
+        for await (const chunk of completion as OpenAIStream<ChatCompletionChunk>) {
           await stream.writeSSE({
             data: JSON.stringify(chunk),
           });
@@ -124,31 +73,42 @@ chatRouter.post("/completions", async (c) => {
           data: "[DONE]",
         });
       });
-    } catch (e) {
-      error = e;
-      if (cfg.server.logging === "dev") {
-        console.error(error);
-      }
     }
-  }
 
-  if (error) {
-    return c.json(
-      {
-        error: error.error,
-      },
-      error.status || 500,
+    const anthropic = new Anthropic({
+      baseURL: provider.base_url,
+      apiKey: provider.api_key,
+      timeout: 3600000,
+    });
+
+    const completion = await anthropic.messages.create(
+      chatCompletionAdapters.openai.requestToAnthropic(
+        reqBody,
+        model.max_tokens,
+      ),
     );
-  }
 
-  return c.json(
-    {
-      error: {
-        message: "All providers failed to complete the request",
-      },
-    },
-    500,
-  );
+    if (reqBody.stream !== true) {
+      return c.json(
+        chatCompletionAdapters.anthropic.responseToOpenai(
+          completion as Message,
+        ),
+      );
+    }
+
+    return streamSSE(c, async (stream) => {
+      for await (const chunk of chatCompletionAdapters.anthropic.streamToOpenai(
+        completion as AnthropicStream<RawMessageStreamEvent>,
+      )) {
+        await stream.writeSSE({
+          data: JSON.stringify(chunk),
+        });
+      }
+      await stream.writeSSE({
+        data: "[DONE]",
+      });
+    });
+  });
 });
 
 export default chatRouter;

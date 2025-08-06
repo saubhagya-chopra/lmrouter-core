@@ -6,31 +6,31 @@ import fs from "fs";
 import type { Context } from "hono";
 import yaml from "yaml";
 
-interface LMRouterCoreConfigServer {
+export interface LMRouterCoreConfigServer {
   host: string;
   port: number;
   logging: string;
 }
 
-type LMRouterCoreConfigProviderType = "openai" | "anthropic";
+export type LMRouterCoreConfigProviderType = "openai" | "anthropic";
 
-interface LMRouterCoreConfigProvider {
+export interface LMRouterCoreConfigProvider {
   type: LMRouterCoreConfigProviderType;
   base_url?: string;
   api_key: string;
 }
 
-interface LMRouterCoreConfigModelProvider {
+export interface LMRouterCoreConfigModelProvider {
   provider: string;
   model: string;
 }
 
-interface LMRouterCoreConfigModel {
+export interface LMRouterCoreConfigModel {
   max_tokens?: number;
   providers: LMRouterCoreConfigModelProvider[];
 }
 
-interface LMRouterCoreConfig {
+export interface LMRouterCoreConfig {
   server: LMRouterCoreConfigServer;
   access_keys: string[];
   providers: Record<string, LMRouterCoreConfigProvider>;
