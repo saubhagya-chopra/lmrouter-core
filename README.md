@@ -25,6 +25,16 @@ ANTHROPIC_MODEL=<YOUR_MODEL_NAME> claude
 Recently, it's popular to use `qwen/qwen3-coder`, `moonshotai/kimi-k2`, and `openai/gpt-oss-120b` as the model for **Claude Code**,
 but feel free to use any model you want.
 
+You can also use the `provider:model` format directly with the demo server:
+
+```bash
+ANTHROPIC_BASE_URL=https://core.lmrouter.com/v1/anthropic \
+ANTHROPIC_AUTH_TOKEN=BYOK:<YOUR_PROVIDER_API_KEY> \
+ANTHROPIC_MODEL=<YOUR_PROVIDER>:<YOUR_MODEL> claude
+```
+
+Examples include `cerebras:qwen-3-coder-480b` and `groq:moonshotai/kimi-k2-instruct` for fast inference.
+
 ### 🛠️ Local Development/Deployment
 
 To setup LMRouter Core locally, make sure you have Node.js installed, then follow these steps:
@@ -83,6 +93,38 @@ Connect to the entire AI ecosystem with support for:
 - **Google** 🔍 — Gemini and other AI services
 - **OpenRouter** 🔄 — Access to 100+ models
 - **Custom Providers** ⚙️ — Any OpenAI/Anthropic-compatible API
+
+### 🎯 Flexible Model Selection
+
+**Two ways to specify models:**
+
+1. **📋 Configuration-Based** — Define models in your `config.yaml`:
+
+   ```yaml
+   models:
+     gpt-4o:
+       providers:
+         - provider: openai
+           model: gpt-4o
+   ```
+
+   Then use: `"model": "gpt-4o"`
+
+2. **⚡ Direct Provider Syntax** — Use the `provider:model` format for instant access:
+
+   ```json
+   {
+     "model": "openai:gpt-4o",
+     "messages": [...]
+   }
+   ```
+
+   **Examples:**
+   - `openai:gpt-4o` → OpenAI's GPT-4o
+   - `anthropic:claude-sonnet-4-0` → Anthropic's Claude Sonnet 4
+   - `openrouter:qwen/qwen3-coder` → Any OpenRouter model
+
+   This syntax bypasses model configuration and routes directly to the specified provider, making it perfect for quick testing or dynamic model selection.
 
 ### 🔐 Authentication & Security
 
