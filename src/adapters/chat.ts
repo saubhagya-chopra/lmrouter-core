@@ -617,7 +617,10 @@ export const chatCompletionAdapters = {
           },
         })),
         top_p: request.top_p,
-        user: request.metadata?.user_id ?? undefined,
+        // Some providers, like OpenRouter, don't support user strings longer than 128 characters, so we truncate it
+        user: request.metadata?.user_id
+          ? request.metadata.user_id.slice(0, 128)
+          : undefined,
       };
     },
     responseToOpenai: (response: Message): ChatCompletion => {
