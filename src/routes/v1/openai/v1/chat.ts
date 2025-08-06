@@ -68,6 +68,10 @@ chatRouter.post("/completions", async (c) => {
         const openai = new OpenAI({
           baseURL: providerCfg.base_url,
           apiKey: c.var.byok ?? providerCfg.api_key,
+          defaultHeaders: {
+            "HTTP-Referer": "https://lmrouter.com/",
+            "X-Title": "LMRouter",
+          },
         });
 
         const completion = await openai.chat.completions.create(reqBody);
