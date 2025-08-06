@@ -24,6 +24,22 @@ export const getModel = (
 ): LMRouterCoreConfigModel | null => {
   const cfg = getConfig(c);
 
+  const colonIndex = modelName.indexOf(":");
+  if (colonIndex !== -1) {
+    const provider = modelName.slice(0, colonIndex);
+    const providerCfg = cfg.providers[provider];
+    if (providerCfg) {
+      return {
+        providers: [
+          {
+            provider,
+            model: modelName.slice(colonIndex + 1),
+          },
+        ],
+      };
+    }
+  }
+
   const model = cfg.models[modelName];
   if (model) {
     return model;
