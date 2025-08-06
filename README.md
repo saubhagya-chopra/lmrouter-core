@@ -22,7 +22,7 @@ ANTHROPIC_AUTH_TOKEN=BYOK:<YOUR_OPENROUTER_API_KEY> \
 ANTHROPIC_MODEL=<YOUR_MODEL_NAME> claude
 ```
 
-Recently, it's popular to use `qwen/qwen3-coder`, `moonshotai/kimi-k2`, and `openai/gpt-oss-120b` as the model for **Claude Code**, 
+Recently, it's popular to use `qwen/qwen3-coder`, `moonshotai/kimi-k2`, and `openai/gpt-oss-120b` as the model for **Claude Code**,
 but feel free to use any model you want.
 
 ### 🛠️ Local Development/Deployment
@@ -50,33 +50,36 @@ npm start
 ### 🤖 Multi-Modal AI Support
 
 - **💬 Language Models**: Chat Completions, Responses API, and Anthropic Messages API with real-time streaming
-  - *Note: Responses API currently supports OpenAI models only; more providers will be supported in the future*
+  - _Note: Responses API currently supports OpenAI models only; more providers will be supported in the future_
 - **🎨 Image Generation**: DALL-E 2/3, GPT-Image-1, and other OpenAI image models
-  - *Note: Expanded support for additional image generation providers coming soon*
+  - _Note: Expanded support for additional image generation providers coming soon_
 - **🔍 Embeddings**: Text embedding models for semantic search and RAG applications
-  - *Note: Expanded support for additional embeddings providers coming soon*
+  - _Note: Expanded support for additional embeddings providers coming soon_
 - **🎬 Video Generation**: Video generation models support
-  - *Note: Video generation support coming soon*
+  - _Note: Video generation support coming soon_
 
 ### 🔗 API Compatibility
 
 **🟢 OpenAI API**:
-  - `💬 /v1/openai/v1/chat/completions` — Chat Completions API
-  - `🖼️ /v1/openai/v1/images/generations` — Image generation API
-  - `✏️ /v1/openai/v1/images/edits` — Image editing API
-  - `🔍 /v1/openai/v1/embeddings` — Embeddings API
-  - `⚡ /v1/openai/v1/responses` — Responses API
-  - `📋 /v1/openai/v1/models` — List available models
+
+- `💬 /v1/openai/v1/chat/completions` — Chat Completions API
+- `🖼️ /v1/openai/v1/images/generations` — Image generation API
+- `✏️ /v1/openai/v1/images/edits` — Image editing API
+- `🔍 /v1/openai/v1/embeddings` — Embeddings API
+- `⚡ /v1/openai/v1/responses` — Responses API
+- `📋 /v1/openai/v1/models` — List available models
 
 **🟣 Anthropic API**:
-  - `💬 /v1/anthropic/v1/messages` — Messages API
-  - `📋 /v1/anthropic/v1/models` — List available models
+
+- `💬 /v1/anthropic/v1/messages` — Messages API
+- `📋 /v1/anthropic/v1/models` — List available models
 
 ### 🌐 Multi-Provider Support
 
 Connect to the entire AI ecosystem with support for:
+
 - **OpenAI** 🤖 — GPT models and beyond
-- **Anthropic** 🧠 — Claude family models  
+- **Anthropic** 🧠 — Claude family models
 - **Google** 🔍 — Gemini and other AI services
 - **OpenRouter** 🔄 — Access to 100+ models
 - **Custom Providers** ⚙️ — Any OpenAI/Anthropic-compatible API
@@ -84,12 +87,14 @@ Connect to the entire AI ecosystem with support for:
 ### 🔐 Authentication & Security
 
 **Flexible Authentication Options:**
+
 - **🔑 API Key Authentication** — Simple, secure key validation
 - **🎒 BYOK (Bring Your Own Key)** — Use your provider keys with `BYOK:` prefix
 
 ### ⚡ Multi-Runtime Support
 
 **Powered by Hono** — Deploy anywhere:
+
 - **🟢 Node.js** — Traditional server deployment
 - **☁️ Cloudflare Workers** — Edge computing at scale
 
