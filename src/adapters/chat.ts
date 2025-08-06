@@ -495,17 +495,19 @@ export const chatCompletionAdapters = {
                 };
               }
               if (message.content[0].type === "tool_result") {
-                return {
-                  role: "tool" as const,
-                  tool_call_id: message.content[0].tool_use_id,
-                  content:
-                    typeof message.content[0].content === "string"
-                      ? message.content[0].content
-                      : (message.content[0].content
-                          ?.filter((part) => part.type === "text")
-                          .map((part) => part.text)
-                          .join("") ?? ""),
-                };
+                return message.content
+                  .filter((part) => part.type === "tool_result")
+                  .map((part) => ({
+                    role: "tool" as const,
+                    tool_call_id: part.tool_use_id,
+                    content:
+                      typeof part.content === "string"
+                        ? part.content
+                        : (part.content
+                            ?.filter((part) => part.type === "text")
+                            .map((part) => part.text)
+                            .join("") ?? ""),
+                  }));
               }
               if (
                 message.content.filter((part) => part.type === "tool_use")
@@ -564,7 +566,8 @@ export const chatCompletionAdapters = {
                   }),
               };
             })
-            .filter((message) => message !== undefined),
+            .filter((message) => message !== undefined)
+            .flat(),
         ),
         model: request.model,
         // TODO: Fix this workaround for Claude Code
