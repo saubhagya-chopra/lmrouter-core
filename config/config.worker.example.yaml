@@ -1,0 +1,49 @@
+server:
+  host: 0.0.0.0
+  port: 8787
+  logging: prod
+
+access_keys: []
+
+providers:
+  openai:
+    type: openai
+    api_key: ""
+  anthropic:
+    type: anthropic
+    api_key: ""
+  google:
+    type: openai
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai
+    api_key: ""
+  perplexity:
+    type: openai
+    base_url: https://api.perplexity.ai
+    api_key: ""
+  fireworks:
+    type: openai
+    base_url: https://api.fireworks.ai/inference/v1
+    api_key: ""
+  groq:
+    type: openai
+    base_url: https://api.groq.com/openai/v1
+    api_key: ""
+  cerebras:
+    type: openai
+    base_url: https://api.cerebras.ai/v1
+    api_key: ""
+  openrouter:
+    type: openai
+    base_url: https://openrouter.ai/api/v1
+    api_key: ""
+
+models:
+  claude-3-5-haiku-20241022:
+    max_tokens: 8192
+    providers:
+      - provider: openrouter
+        model: anthropic/claude-3.5-haiku-20241022
+  "*":
+    providers:
+      - provider: openrouter
+        model: ""
