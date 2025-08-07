@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 LMRouter Contributors
+
 import type { LMRouterCoreConfigProvider } from "../utils/config.js";
 
 export abstract class LMRouterAdapter<
