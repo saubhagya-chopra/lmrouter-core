@@ -14,6 +14,8 @@ Try out LMRouter Core instantly with our live demo server at **https://core.lmro
 
 This demo server simply proxies all requests to OpenRouter while exposing both OpenAI Chat Completions and Anthropic Messages APIs. It's perfect for connecting [**Claude Code**](https://www.anthropic.com/claude-code) to any OpenRouter model **without any additional setup on your side**. It's also running under BYOK (Bring Your Own Key) mode, so you need to provide your own API keys for OpenRouter.
 
+#### 🔗 Claude Code
+
 To connect with **Claude Code**, run in your terminal:
 
 ```bash
@@ -24,16 +26,6 @@ ANTHROPIC_MODEL=<YOUR_MODEL_NAME> claude
 
 Recently, it's popular to use `qwen/qwen3-coder`, `moonshotai/kimi-k2`, and `openai/gpt-oss-120b` as the model for **Claude Code**,
 but feel free to use any model you want.
-
-You can also use the `provider:model` format directly with the demo server:
-
-```bash
-ANTHROPIC_BASE_URL=https://core.lmrouter.com/v1/anthropic \
-ANTHROPIC_AUTH_TOKEN=BYOK:<YOUR_PROVIDER_API_KEY> \
-ANTHROPIC_MODEL=<YOUR_PROVIDER>:<YOUR_MODEL> claude
-```
-
-Examples include `cerebras:qwen-3-coder-480b` and `groq:moonshotai/kimi-k2-instruct` for fast inference.
 
 ### 🛠️ Local Development/Deployment
 
