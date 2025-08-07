@@ -18,7 +18,7 @@ export type OpenAIImageEditAdapter = LMRouterAdapter<
   ImageEditStreamEvent
 >;
 
-const adapters = {
+const adapters: Record<string, new () => OpenAIImageEditAdapter> = {
   openai: OpenAIImageEditOpenAIAdapter,
 };
 
@@ -26,9 +26,9 @@ export class OpenAIImageEditAdapterFactory {
   static getAdapter(
     provider: LMRouterCoreConfigProvider,
   ): OpenAIImageEditAdapter {
-    if (provider.type === "openai") {
-      return new adapters.openai();
+    if (!Object.keys(adapters).includes(provider.type)) {
+      throw new Error(`Unsupported provider: ${provider.type}`);
     }
-    throw new Error(`Unsupported provider: ${provider.type}`);
+    return new adapters[provider.type]();
   }
 }

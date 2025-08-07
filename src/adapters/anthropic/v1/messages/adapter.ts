@@ -19,7 +19,7 @@ export type AnthropicMessagesAdapter = LMRouterAdapter<
   RawMessageStreamEvent
 >;
 
-const adapters = {
+const adapters: Record<string, new () => AnthropicMessagesAdapter> = {
   anthropic: AnthropicMessagesAnthropicAdapter,
   others: AnthropicMessagesOthersAdapter,
 };
@@ -28,9 +28,9 @@ export class AnthropicMessagesAdapterFactory {
   static getAdapter(
     provider: LMRouterCoreConfigProvider,
   ): AnthropicMessagesAdapter {
-    if (provider.type === "anthropic") {
-      return new adapters.anthropic();
+    if (!Object.keys(adapters).includes(provider.type)) {
+      return new adapters.others();
     }
-    return new adapters.others();
+    return new adapters[provider.type]();
   }
 }

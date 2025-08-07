@@ -17,7 +17,7 @@ export type OpenAIEmbeddingsAdapter = LMRouterAdapter<
   never
 >;
 
-const adapters = {
+const adapters: Record<string, new () => OpenAIEmbeddingsAdapter> = {
   openai: OpenAIEmbeddingsOpenAIAdapter,
 };
 
@@ -25,9 +25,9 @@ export class OpenAIEmbeddingsAdapterFactory {
   static getAdapter(
     provider: LMRouterCoreConfigProvider,
   ): OpenAIEmbeddingsAdapter {
-    if (provider.type === "openai") {
-      return new adapters.openai();
+    if (!Object.keys(adapters).includes(provider.type)) {
+      throw new Error(`Unsupported provider: ${provider.type}`);
     }
-    throw new Error(`Unsupported provider: ${provider.type}`);
+    return new adapters[provider.type]();
   }
 }

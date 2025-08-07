@@ -22,7 +22,7 @@ export type OpenAIResponsesAdapter = LMRouterAdapter<
   ResponseStreamEvent
 >;
 
-const adapters = {
+const adapters: Record<string, new () => OpenAIResponsesAdapter> = {
   openai: OpenAIResponsesOpenAIAdapter,
 };
 
@@ -30,9 +30,9 @@ export class OpenAIResponsesAdapterFactory {
   static getAdapter(
     provider: LMRouterCoreConfigProvider,
   ): OpenAIResponsesAdapter {
-    if (provider.type === "openai") {
-      return new adapters.openai();
+    if (!Object.keys(adapters).includes(provider.type)) {
+      throw new Error(`Unsupported provider: ${provider.type}`);
     }
-    throw new Error(`Unsupported provider: ${provider.type}`);
+    return new adapters[provider.type]();
   }
 }
