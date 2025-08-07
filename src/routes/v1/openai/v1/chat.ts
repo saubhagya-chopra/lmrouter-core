@@ -1,22 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
-import Anthropic from "@anthropic-ai/sdk";
-import { Stream as AnthropicStream } from "@anthropic-ai/sdk/core/streaming";
-import type {
-  Message,
-  RawMessageStreamEvent,
-} from "@anthropic-ai/sdk/resources";
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
-import OpenAI from "openai";
-import { Stream as OpenAIStream } from "openai/core/streaming";
-import type {
-  ChatCompletionChunk,
-  ChatCompletionCreateParamsBase,
-} from "openai/resources/chat/completions";
+import type { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
-import { chatCompletionAdapters } from "../../../../adapters/chat.js";
+import { OpenAIChatCompletionAdapterFactory } from "../../../../adapters/openai/v1/chat/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
 import type { Context } from "../../../../types/hono.js";
 import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
@@ -48,58 +37,19 @@ chatRouter.post("/completions", async (c) => {
       };
     }
 
-    if (provider.type !== "anthropic") {
-      const openai = new OpenAI({
-        baseURL: provider.base_url,
-        apiKey: provider.api_key,
-        defaultHeaders: {
-          "HTTP-Referer": "https://lmrouter.com/",
-          "X-Title": "LMRouter",
-        },
-      });
-
-      const completion = await openai.chat.completions.create(reqBody);
-      if (reqBody.stream !== true) {
-        return c.json(completion);
-      }
-
-      return streamSSE(c, async (stream) => {
-        for await (const chunk of completion as OpenAIStream<ChatCompletionChunk>) {
-          await stream.writeSSE({
-            data: JSON.stringify(chunk),
-          });
-        }
-        await stream.writeSSE({
-          data: "[DONE]",
-        });
-      });
-    }
-
-    const anthropic = new Anthropic({
-      baseURL: provider.base_url,
-      apiKey: provider.api_key,
-      timeout: 3600000,
-    });
-
-    const completion = await anthropic.messages.create(
-      chatCompletionAdapters.openai.requestToAnthropic(
-        reqBody,
-        model.max_tokens,
-      ),
-    );
-
+    const adapter = OpenAIChatCompletionAdapterFactory.getAdapter(provider);
     if (reqBody.stream !== true) {
-      return c.json(
-        chatCompletionAdapters.anthropic.responseToOpenai(
-          completion as Message,
-        ),
-      );
+      const completion = await adapter.sendRequest(provider, reqBody, {
+        maxTokens: model.max_tokens,
+      });
+      return c.json(completion);
     }
 
+    const s = adapter.sendRequestStreaming(provider, reqBody, {
+      maxTokens: model.max_tokens,
+    });
     return streamSSE(c, async (stream) => {
-      for await (const chunk of chatCompletionAdapters.anthropic.streamToOpenai(
-        completion as AnthropicStream<RawMessageStreamEvent>,
-      )) {
+      for await (const chunk of s) {
         await stream.writeSSE({
           data: JSON.stringify(chunk),
         });
