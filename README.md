@@ -24,8 +24,7 @@ ANTHROPIC_AUTH_TOKEN=BYOK:<YOUR_OPENROUTER_API_KEY> \
 ANTHROPIC_MODEL=<YOUR_MODEL_NAME> claude
 ```
 
-Recently, it's popular to use `qwen/qwen3-coder`, `moonshotai/kimi-k2`, and `openai/gpt-oss-120b` as the model for **Claude Code**,
-but feel free to use any model you want.
+Recently, it's popular to use `qwen/qwen3-coder`, `moonshotai/kimi-k2`, `openai/gpt-oss-120b`, and `openai/gpt-5[-mini]` as the model for **Claude Code**, but feel free to use any model you want.
 
 ### 🛠️ Local Development/Deployment
 
