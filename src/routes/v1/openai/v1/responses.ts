@@ -3,13 +3,9 @@
 
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
-import OpenAI from "openai";
-import { Stream as OpenAIStream } from "openai/core/streaming";
-import type {
-  ResponseCreateParamsBase,
-  ResponseStreamEvent,
-} from "openai/resources/responses/responses";
+import type { ResponseCreateParamsBase } from "openai/resources/responses/responses";
 
+import { OpenAIResponsesAdapterFactory } from "../../../../adapters/openai/v1/responses/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
 import type { Context } from "../../../../types/hono.js";
 import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
@@ -33,21 +29,18 @@ responsesRouter.post("/", async (c) => {
   }
 
   return await iterateModelProviders(model, c, async (modelName, provider) => {
-    const openai = new OpenAI({
-      baseURL: provider.base_url,
-      apiKey: provider.api_key,
-    });
-
     const reqBody = { ...body } as ResponseCreateParamsBase;
     reqBody.model = modelName;
 
-    const response = await openai.responses.create(reqBody);
+    const adapter = OpenAIResponsesAdapterFactory.getAdapter(provider);
     if (reqBody.stream !== true) {
+      const response = await adapter.sendRequest(provider, reqBody);
       return c.json(response);
     }
 
+    const s = adapter.sendRequestStreaming(provider, reqBody);
     return streamSSE(c, async (stream) => {
-      for await (const chunk of response as OpenAIStream<ResponseStreamEvent>) {
+      for await (const chunk of s) {
         await stream.writeSSE({
           event: chunk.type,
           data: JSON.stringify(chunk),

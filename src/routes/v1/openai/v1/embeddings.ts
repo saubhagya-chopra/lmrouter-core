@@ -2,9 +2,9 @@
 // Copyright (c) 2025 LMRouter Contributors
 
 import { Hono } from "hono";
-import OpenAI from "openai";
 import type { EmbeddingCreateParams } from "openai/resources";
 
+import { OpenAIEmbeddingsAdapterFactory } from "../../../../adapters/openai/v1/embeddings/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
 import type { Context } from "../../../../types/hono.js";
 import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
@@ -28,14 +28,12 @@ embeddingsRouter.post("/", async (c) => {
   }
 
   return await iterateModelProviders(model, c, async (modelName, provider) => {
-    const openai = new OpenAI({
-      baseURL: provider.base_url,
-      apiKey: provider.api_key,
-    });
     const reqBody = { ...body } as EmbeddingCreateParams;
     reqBody.model = modelName;
-    const embedding = await openai.embeddings.create(reqBody);
-    return c.json(embedding);
+
+    const adapter = OpenAIEmbeddingsAdapterFactory.getAdapter(provider);
+    const embeddings = await adapter.sendRequest(provider, reqBody);
+    return c.json(embeddings);
   });
 });
 

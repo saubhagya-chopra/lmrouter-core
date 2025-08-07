@@ -85,7 +85,9 @@ export const iterateModelProviders = async (
   if (error) {
     return c.json(
       {
-        error: error.error,
+        error: error.error ?? {
+          message: error.message,
+        },
       },
       error.status || 500,
     );
