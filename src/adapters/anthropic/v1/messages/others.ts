@@ -57,9 +57,7 @@ export class AnthropicMessagesOthersAdapter
       provider,
       this.convertRequest(request),
     );
-    for await (const chunk of this.convertStream(stream)) {
-      yield chunk;
-    }
+    yield* this.convertStream(stream);
   }
 
   convertRequest(

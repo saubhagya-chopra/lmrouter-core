@@ -44,8 +44,6 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
   ): AsyncGenerator<ResponseStreamEvent> {
     const openai = this.getClient(provider);
     const stream = await openai.responses.create(request);
-    for await (const chunk of stream as Stream<ResponseStreamEvent>) {
-      yield chunk;
-    }
+    yield* stream as Stream<ResponseStreamEvent>;
   }
 }

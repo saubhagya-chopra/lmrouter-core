@@ -55,11 +55,7 @@ export class OpenAIChatCompletionAnthropicAdapter
     const stream = await anthropic.messages.create(
       this.convertRequest(request, options?.maxTokens),
     );
-    for await (const chunk of this.convertStream(
-      stream as Stream<RawMessageStreamEvent>,
-    )) {
-      yield chunk;
-    }
+    yield* this.convertStream(stream as Stream<RawMessageStreamEvent>);
   }
 
   convertRequest(

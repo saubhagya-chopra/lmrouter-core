@@ -46,8 +46,6 @@ export class OpenAIChatCompletionOpenAIAdapter
   ): AsyncGenerator<ChatCompletionChunk> {
     const openai = this.getClient(provider);
     const stream = await openai.chat.completions.create(request);
-    for await (const chunk of stream as Stream<ChatCompletionChunk>) {
-      yield chunk;
-    }
+    yield* stream as Stream<ChatCompletionChunk>;
   }
 }

@@ -41,8 +41,6 @@ export class OpenAIImageEditOpenAIAdapter implements OpenAIImageEditAdapter {
   ): AsyncGenerator<ImageEditStreamEvent> {
     const openai = this.getClient(provider);
     const stream = await openai.images.edit(request);
-    for await (const chunk of stream as Stream<ImageEditStreamEvent>) {
-      yield chunk;
-    }
+    yield* stream as Stream<ImageEditStreamEvent>;
   }
 }

@@ -43,8 +43,6 @@ export class OpenAIImageGenerationOpenAIAdapter
   ): AsyncGenerator<ImageGenStreamEvent> {
     const openai = this.getClient(provider);
     const stream = await openai.images.generate(request);
-    for await (const chunk of stream as Stream<ImageGenStreamEvent>) {
-      yield chunk;
-    }
+    yield* stream as Stream<ImageGenStreamEvent>;
   }
 }

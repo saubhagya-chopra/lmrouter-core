@@ -40,8 +40,6 @@ export class AnthropicMessagesAnthropicAdapter
   ): AsyncGenerator<RawMessageStreamEvent> {
     const anthropic = this.getClient(provider);
     const stream = await anthropic.messages.create(request);
-    for await (const chunk of stream as Stream<RawMessageStreamEvent>) {
-      yield chunk;
-    }
+    yield* stream as Stream<RawMessageStreamEvent>;
   }
 }
