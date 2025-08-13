@@ -16,12 +16,14 @@ export type OpenAIResponsesInputOptions = {
   maxTokens?: number;
 };
 
-export type OpenAIResponsesAdapter = LMRouterAdapter<
+export abstract class OpenAIResponsesAdapter extends LMRouterAdapter<
   ResponseCreateParamsBase,
   OpenAIResponsesInputOptions,
   Response,
   ResponseStreamEvent
->;
+> {
+  response: Response | undefined;
+}
 
 const adapters: Record<string, new () => OpenAIResponsesAdapter> = {
   openai: OpenAIResponsesOpenAIAdapter,

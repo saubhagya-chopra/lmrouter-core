@@ -16,6 +16,8 @@ import type {
 import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
 
 export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
+  response: Response | undefined;
+
   getClient(provider: LMRouterCoreConfigProvider): OpenAI {
     return new OpenAI({
       baseURL: provider.base_url,
@@ -44,6 +46,11 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
   ): AsyncGenerator<ResponseStreamEvent> {
     const openai = this.getClient(provider);
     const stream = await openai.responses.create(request);
-    yield* stream as Stream<ResponseStreamEvent>;
+    for await (const chunk of stream as Stream<ResponseStreamEvent>) {
+      if (chunk.type === "response.completed") {
+        this.response = chunk.response;
+      }
+      yield chunk;
+    }
   }
 }

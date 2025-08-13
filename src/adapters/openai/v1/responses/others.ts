@@ -29,6 +29,8 @@ import {
 import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
 
 export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
+  response: Response | undefined;
+
   getAdapter(
     provider: LMRouterCoreConfigProvider,
   ): OpenAIChatCompletionAdapter {
@@ -64,7 +66,12 @@ export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
         maxTokens: options?.maxTokens,
       },
     );
-    yield* this.convertStream(stream, request);
+    for await (const chunk of this.convertStream(stream, request)) {
+      if (chunk.type === "response.completed") {
+        this.response = chunk.response;
+      }
+      yield chunk;
+    }
   }
 
   convertRequest(
