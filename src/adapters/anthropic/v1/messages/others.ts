@@ -287,6 +287,132 @@ export class AnthropicMessagesOthersAdapter
       server_tool_use: null,
     };
 
+    const getChunkType = (
+      chunk: ChatCompletionChunk,
+    ): State.SendingText | State.SendingToolUse => {
+      if (chunk.choices[0].delta.tool_calls) {
+        return State.SendingToolUse;
+      }
+      return State.SendingText;
+    };
+
+    const hasContent = (chunk: ChatCompletionChunk): boolean => {
+      const chunkType = getChunkType(chunk);
+      return (
+        (chunkType === State.SendingText &&
+          typeof chunk.choices[0].delta.content === "string" &&
+          chunk.choices[0].delta.content.length > 0) ||
+        (chunkType === State.SendingToolUse &&
+          typeof chunk.choices[0].delta.tool_calls?.[0].function?.arguments ===
+            "string" &&
+          chunk.choices[0].delta.tool_calls?.[0].function?.arguments.length > 0)
+      );
+    };
+
+    const messageStart = (
+      chunk: ChatCompletionChunk,
+    ): RawMessageStreamEvent => {
+      return {
+        type: "message_start",
+        message: {
+          id: chunk.id,
+          type: "message" as const,
+          role: "assistant" as const,
+          model: chunk.model,
+          content: [],
+          stop_reason: null,
+          stop_sequence: null,
+          usage: {
+            cache_creation_input_tokens: null,
+            cache_read_input_tokens: null,
+            input_tokens: 0,
+            output_tokens: 0,
+            server_tool_use: null,
+            service_tier:
+              chunk.service_tier === "default"
+                ? "standard"
+                : chunk.service_tier === "priority"
+                  ? "priority"
+                  : null,
+          },
+        },
+      };
+    };
+
+    const contentBlockStart = (
+      chunk: ChatCompletionChunk,
+    ): RawMessageStreamEvent => {
+      if (getChunkType(chunk) === State.SendingText) {
+        return {
+          type: "content_block_start",
+          index: blockCount,
+          content_block: {
+            type: "text" as const,
+            text: "",
+            citations: null,
+          },
+        };
+      }
+      return {
+        type: "content_block_start",
+        index: blockCount,
+        content_block: {
+          type: "tool_use" as const,
+          id: chunk.choices[0].delta.tool_calls?.[0].id ?? "",
+          name: chunk.choices[0].delta.tool_calls?.[0].function?.name ?? "",
+          input: {},
+        },
+      };
+    };
+
+    const contentBlockDelta = (
+      chunk: ChatCompletionChunk,
+    ): RawMessageStreamEvent => {
+      if (getChunkType(chunk) === State.SendingText) {
+        return {
+          type: "content_block_delta",
+          index: blockCount,
+          delta: {
+            type: "text_delta" as const,
+            text: chunk.choices[0].delta.content ?? "",
+          },
+        };
+      }
+      return {
+        type: "content_block_delta",
+        index: blockCount,
+        delta: {
+          type: "input_json_delta" as const,
+          partial_json:
+            chunk.choices[0].delta.tool_calls?.[0].function?.arguments ?? "",
+        },
+      };
+    };
+
+    const contentBlockStop = (): RawMessageStreamEvent => {
+      return {
+        type: "content_block_stop",
+        index: blockCount,
+      };
+    };
+
+    const messageDelta = (): RawMessageStreamEvent => {
+      return {
+        type: "message_delta",
+        delta: {
+          stop_reason: stopReason,
+          stop_sequence: null,
+        },
+        usage,
+      };
+    };
+
+    const messageStop = (): RawMessageStreamEvent => {
+      return {
+        type: "message_stop",
+      };
+    };
+
     for await (const chunk of stream) {
       if (chunk.choices.length > 0 && chunk.choices[0].finish_reason) {
         stopReason =
@@ -313,186 +439,31 @@ export class AnthropicMessagesOthersAdapter
       ) {
         continue;
       }
-      if (state == State.Init) {
-        yield {
-          type: "message_start",
-          message: {
-            id: chunk.id,
-            type: "message" as const,
-            role: "assistant" as const,
-            model: chunk.model,
-            content: [],
-            stop_reason: null,
-            stop_sequence: null,
-            usage: {
-              cache_creation_input_tokens: null,
-              cache_read_input_tokens: null,
-              input_tokens: 0,
-              output_tokens: 0,
-              server_tool_use: null,
-              service_tier:
-                chunk.service_tier === "default"
-                  ? "standard"
-                  : chunk.service_tier === "priority"
-                    ? "priority"
-                    : null,
-            },
-          },
-        };
-        if (chunk.choices[0].delta.tool_calls) {
-          yield {
-            type: "content_block_start",
-            index: blockCount,
-            content_block: {
-              type: "tool_use" as const,
-              id: chunk.choices[0].delta.tool_calls[0].id ?? "",
-              name: chunk.choices[0].delta.tool_calls[0].function?.name ?? "",
-              input: {},
-            },
-          };
-          if (
-            typeof chunk.choices[0].delta.tool_calls[0].function?.arguments ===
-              "string" &&
-            chunk.choices[0].delta.tool_calls[0].function?.arguments.length > 0
-          ) {
-            yield {
-              type: "content_block_delta",
-              index: blockCount,
-              delta: {
-                type: "input_json_delta" as const,
-                partial_json:
-                  chunk.choices[0].delta.tool_calls[0].function.arguments,
-              },
-            };
-          }
-          state = State.SendingToolUse;
-        } else {
-          yield {
-            type: "content_block_start",
-            index: blockCount,
-            content_block: {
-              type: "text" as const,
-              text: "",
-              citations: null,
-            },
-          };
-          if (
-            typeof chunk.choices[0].delta.content === "string" &&
-            chunk.choices[0].delta.content.length > 0
-          ) {
-            yield {
-              type: "content_block_delta",
-              index: blockCount,
-              delta: {
-                type: "text_delta" as const,
-                text: chunk.choices[0].delta.content,
-              },
-            };
-          }
-          state = State.SendingText;
+
+      const chunkType = getChunkType(chunk);
+      if (state === State.Init) {
+        yield messageStart(chunk);
+        yield contentBlockStart(chunk);
+        if (hasContent(chunk)) {
+          yield contentBlockDelta(chunk);
         }
-      } else if (state == State.SendingText) {
-        if (chunk.choices[0].delta.tool_calls) {
-          yield {
-            type: "content_block_stop",
-            index: blockCount,
-          };
-          blockCount++;
-          yield {
-            type: "content_block_start",
-            index: blockCount,
-            content_block: {
-              type: "tool_use" as const,
-              id: chunk.choices[0].delta.tool_calls[0].id ?? "",
-              name: chunk.choices[0].delta.tool_calls[0].function?.name ?? "",
-              input: {},
-            },
-          };
-          if (
-            typeof chunk.choices[0].delta.tool_calls[0].function?.arguments ===
-              "string" &&
-            chunk.choices[0].delta.tool_calls[0].function?.arguments.length > 0
-          ) {
-            yield {
-              type: "content_block_delta",
-              index: blockCount,
-              delta: {
-                type: "input_json_delta" as const,
-                partial_json:
-                  chunk.choices[0].delta.tool_calls[0].function.arguments,
-              },
-            };
-          }
-          state = State.SendingToolUse;
-        } else {
-          yield {
-            type: "content_block_delta",
-            index: blockCount,
-            delta: {
-              type: "text_delta" as const,
-              text: chunk.choices[0].delta.content ?? "",
-            },
-          };
+        state = chunkType;
+      } else if (chunkType === state) {
+        yield contentBlockDelta(chunk);
+      } else {
+        yield contentBlockStop();
+        blockCount++;
+        yield contentBlockStart(chunk);
+        if (hasContent(chunk)) {
+          yield contentBlockDelta(chunk);
         }
-      } else if (state == State.SendingToolUse) {
-        if (chunk.choices[0].delta.tool_calls) {
-          yield {
-            type: "content_block_delta",
-            index: blockCount,
-            delta: {
-              type: "input_json_delta" as const,
-              partial_json:
-                chunk.choices[0].delta.tool_calls[0].function?.arguments ?? "",
-            },
-          };
-        } else {
-          yield {
-            type: "content_block_stop",
-            index: blockCount,
-          };
-          blockCount++;
-          yield {
-            type: "content_block_start",
-            index: blockCount,
-            content_block: {
-              type: "text" as const,
-              text: "",
-              citations: null,
-            },
-          };
-          if (
-            typeof chunk.choices[0].delta.content === "string" &&
-            chunk.choices[0].delta.content.length > 0
-          ) {
-            yield {
-              type: "content_block_delta",
-              index: blockCount,
-              delta: {
-                type: "text_delta" as const,
-                text: chunk.choices[0].delta.content,
-              },
-            };
-          }
-          state = State.SendingText;
-        }
+        state = chunkType;
       }
     }
     if (state !== State.Init) {
-      yield {
-        type: "content_block_stop",
-        index: blockCount,
-      };
-      yield {
-        type: "message_delta",
-        delta: {
-          stop_reason: stopReason,
-          stop_sequence: null,
-        },
-        usage,
-      };
-      yield {
-        type: "message_stop",
-      };
+      yield contentBlockStop();
+      yield messageDelta();
+      yield messageStop();
     }
   }
 }
