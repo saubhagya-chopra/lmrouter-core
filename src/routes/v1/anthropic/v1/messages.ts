@@ -7,10 +7,10 @@ import { streamSSE } from "hono/streaming";
 
 import { AnthropicMessagesAdapterFactory } from "../../../../adapters/anthropic/v1/messages/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
-import type { Context } from "../../../../types/hono.js";
+import type { ContextEnv } from "../../../../types/hono.js";
 import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
 
-const messagesRouter = new Hono<Context>();
+const messagesRouter = new Hono<ContextEnv>();
 
 messagesRouter.use(auth);
 

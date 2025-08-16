@@ -3,11 +3,11 @@
 
 import { Hono } from "hono";
 
-import type { Context } from "../../../types/hono.js";
+import type { ContextEnv } from "../../../types/hono.js";
 import messagesRouter from "./v1/messages.js";
 import modelsRouter from "./v1/models.js";
 
-const anthropicV1Router = new Hono<Context>();
+const anthropicV1Router = new Hono<ContextEnv>();
 
 anthropicV1Router.route("/messages", messagesRouter);
 anthropicV1Router.route("/models", modelsRouter);

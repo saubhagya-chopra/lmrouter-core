@@ -8,11 +8,11 @@ import { logger } from "hono/logger";
 import rootAnthropicRouter from "./routes/anthropic.js";
 import rootOpenaiRouter from "./routes/openai.js";
 import v1Router from "./routes/v1.js";
-import type { Context } from "./types/hono.js";
+import type { ContextEnv } from "./types/hono.js";
 import { getConfig } from "./utils/config.js";
 import { getUptime } from "./utils/utils.js";
 
-const app = new Hono<Context>();
+const app = new Hono<ContextEnv>();
 
 app.use(logger());
 app.use(cors());

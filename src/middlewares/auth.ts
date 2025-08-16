@@ -3,10 +3,10 @@
 
 import { createMiddleware } from "hono/factory";
 
-import type { Context } from "../types/hono.js";
+import type { ContextEnv } from "../types/hono.js";
 import { getConfig } from "../utils/config.js";
 
-export const auth = createMiddleware<Context>(async (c, next) => {
+export const auth = createMiddleware<ContextEnv>(async (c, next) => {
   const apiKey =
     c.req.header("Authorization")?.split(" ")[1] ?? c.req.header("x-api-key");
   if (!apiKey) {

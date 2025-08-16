@@ -4,9 +4,9 @@
 import { Hono } from "hono";
 
 import anthropicRouter from "./v1/anthropic.js";
-import type { Context } from "../types/hono.js";
+import type { ContextEnv } from "../types/hono.js";
 
-const rootAnthropicRouter = new Hono<Context>();
+const rootAnthropicRouter = new Hono<ContextEnv>();
 
 rootAnthropicRouter.route("/", anthropicRouter);
 

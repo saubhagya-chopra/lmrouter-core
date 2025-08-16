@@ -11,10 +11,10 @@ import type {
 import { OpenAIImageEditAdapterFactory } from "../../../../adapters/openai/v1/images/edits/adapter.js";
 import { OpenAIImageGenerationAdapterFactory } from "../../../../adapters/openai/v1/images/generations/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
-import type { Context } from "../../../../types/hono.js";
+import type { ContextEnv } from "../../../../types/hono.js";
 import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
 
-const imagesRouter = new Hono<Context>();
+const imagesRouter = new Hono<ContextEnv>();
 
 imagesRouter.use(auth);
 

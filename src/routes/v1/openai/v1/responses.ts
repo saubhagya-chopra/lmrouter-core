@@ -7,11 +7,11 @@ import type { ResponseCreateParamsBase } from "openai/resources/responses/respon
 
 import { OpenAIResponsesAdapterFactory } from "../../../../adapters/openai/v1/responses/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
-import type { Context } from "../../../../types/hono.js";
+import type { ContextEnv } from "../../../../types/hono.js";
 import { ResponsesStoreFactory } from "../../../../utils/responses-store.js";
 import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
 
-const responsesRouter = new Hono<Context>();
+const responsesRouter = new Hono<ContextEnv>();
 
 responsesRouter.use(auth);
 

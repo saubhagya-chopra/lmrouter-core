@@ -6,10 +6,10 @@ import type { EmbeddingCreateParams } from "openai/resources";
 
 import { OpenAIEmbeddingsAdapterFactory } from "../../../../adapters/openai/v1/embeddings/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
-import type { Context } from "../../../../types/hono.js";
+import type { ContextEnv } from "../../../../types/hono.js";
 import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
 
-const embeddingsRouter = new Hono<Context>();
+const embeddingsRouter = new Hono<ContextEnv>();
 
 embeddingsRouter.use(auth);
 

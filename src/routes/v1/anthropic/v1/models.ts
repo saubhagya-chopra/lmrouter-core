@@ -3,10 +3,10 @@
 
 import { Hono } from "hono";
 
-import type { Context } from "../../../../types/hono.js";
+import type { ContextEnv } from "../../../../types/hono.js";
 import { getConfig } from "../../../../utils/config.js";
 
-const modelsRouter = new Hono<Context>();
+const modelsRouter = new Hono<ContextEnv>();
 
 modelsRouter.get("/:model{.+}", (c) => {
   const cfg = getConfig(c);

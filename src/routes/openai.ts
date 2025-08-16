@@ -4,9 +4,9 @@
 import { Hono } from "hono";
 
 import openaiRouter from "./v1/openai.js";
-import type { Context } from "../types/hono.js";
+import type { ContextEnv } from "../types/hono.js";
 
-const rootOpenaiRouter = new Hono<Context>();
+const rootOpenaiRouter = new Hono<ContextEnv>();
 
 rootOpenaiRouter.route("/", openaiRouter);
 

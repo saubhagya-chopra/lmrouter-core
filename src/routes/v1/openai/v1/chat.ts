@@ -7,10 +7,10 @@ import type { ChatCompletionCreateParamsBase } from "openai/resources/chat/compl
 
 import { OpenAIChatCompletionAdapterFactory } from "../../../../adapters/openai/v1/chat/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
-import type { Context } from "../../../../types/hono.js";
+import type { ContextEnv } from "../../../../types/hono.js";
 import { getModel, iterateModelProviders } from "../../../../utils/utils.js";
 
-const chatRouter = new Hono<Context>();
+const chatRouter = new Hono<ContextEnv>();
 
 chatRouter.use(auth);
 
