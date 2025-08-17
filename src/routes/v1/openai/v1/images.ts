@@ -47,7 +47,14 @@ imagesRouter.post("/edits", async (c) => {
   const formData = await c.req.formData();
   const body: Record<string, any> = {};
   for (const [key, value] of formData.entries()) {
-    body[key] = value;
+    if (key === "image[]") {
+      if (!Array.isArray(body.image)) {
+        body.image = [];
+      }
+      body.image.push(value);
+    } else {
+      body[key] = value;
+    }
   }
 
   return await iterateModelProviders(c, async (modelName, provider) => {
