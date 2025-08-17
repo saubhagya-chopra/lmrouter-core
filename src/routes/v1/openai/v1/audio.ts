@@ -10,7 +10,7 @@ import type {
 import type { SpeechCreateParams } from "openai/resources/audio/speech";
 
 import { OpenAIAudioTranscriptionAdapterFactory } from "../../../../adapters/openai/v1/audio/transcriptions/adapter.js";
-import { OpenAIAudioTTsAdapterFactory } from "../../../../adapters/openai/v1/audio/speech/adapter.js";
+import { OpenAIAudioTTSAdapterFactory } from "../../../../adapters/openai/v1/audio/speech/adapter.js";
 import { auth } from "../../../../middlewares/auth.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
@@ -58,7 +58,7 @@ audioRouter.post("/speech", async (c) => {
     const reqBody = { ...body } as SpeechCreateParams;
     reqBody.model = modelName;
 
-    const adapter = OpenAIAudioTTsAdapterFactory.getAdapter(provider);
+    const adapter = OpenAIAudioTTSAdapterFactory.getAdapter(provider);
     const res = await adapter.sendRequest(provider, reqBody);
     const buf = await res.arrayBuffer();
     return new Response(buf, {

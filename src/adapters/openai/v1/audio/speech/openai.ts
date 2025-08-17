@@ -4,10 +4,10 @@
 import OpenAI from "openai";
 import type { SpeechCreateParams } from "openai/resources/audio/speech";
 
-import type { OpenAIAudioTTsAdapter } from "./adapter.js";
+import type { OpenAIAudioTTSAdapter } from "./adapter.js";
 import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
 
-export class OpenAIAudioTTsOpenAIAdapter implements OpenAIAudioTTsAdapter {
+export class OpenAIAudioTTSOpenAIAdapter implements OpenAIAudioTTSAdapter {
   getClient(provider: LMRouterCoreConfigProvider): OpenAI {
     return new OpenAI({
       baseURL: provider.base_url,

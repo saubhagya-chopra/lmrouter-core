@@ -4,25 +4,25 @@
 import type { SpeechCreateParams } from "openai/resources/audio/speech";
 
 import { LMRouterAdapter } from "../../../../adapter.js";
-import { OpenAIAudioTTsOpenAIAdapter } from "./openai.js";
+import { OpenAIAudioTTSOpenAIAdapter } from "./openai.js";
 import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
 
-export type OpenAIAudioTTsAdapter = LMRouterAdapter<
+export type OpenAIAudioTTSAdapter = LMRouterAdapter<
   SpeechCreateParams,
   {},
   Response,
   never
 >;
 
-const adapters: Record<string, new () => OpenAIAudioTTsAdapter> = {
-  openai: OpenAIAudioTTsOpenAIAdapter,
-  openai_woresp: OpenAIAudioTTsOpenAIAdapter,
+const adapters: Record<string, new () => OpenAIAudioTTSAdapter> = {
+  openai: OpenAIAudioTTSOpenAIAdapter,
+  openai_woresp: OpenAIAudioTTSOpenAIAdapter,
 };
 
-export class OpenAIAudioTTsAdapterFactory {
+export class OpenAIAudioTTSAdapterFactory {
   static getAdapter(
     provider: LMRouterCoreConfigProvider,
-  ): OpenAIAudioTTsAdapter {
+  ): OpenAIAudioTTSAdapter {
     if (!Object.keys(adapters).includes(provider.type)) {
       throw new Error(`Unsupported provider: ${provider.type}`);
     }
