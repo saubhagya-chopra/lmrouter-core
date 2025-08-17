@@ -7,7 +7,16 @@ import type { ContextEnv } from "../types/hono.js";
 import { getModel } from "../utils/utils.js";
 
 export const parseModel = createMiddleware<ContextEnv>(async (c, next) => {
-  const body = await c.req.json();
+  let body: Record<string, any> = {};
+  if (c.req.header("content-type")?.includes("application/json")) {
+    body = await c.req.json();
+  } else {
+    const formData = await c.req.formData();
+    for (const [key, value] of formData.entries()) {
+      body[key] = value;
+    }
+  }
+
   if (!body.model) {
     return c.json(
       {

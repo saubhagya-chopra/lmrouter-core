@@ -44,7 +44,12 @@ imagesRouter.post("/generations", async (c) => {
 });
 
 imagesRouter.post("/edits", async (c) => {
-  const body = await c.req.json();
+  const formData = await c.req.formData();
+  const body: Record<string, any> = {};
+  for (const [key, value] of formData.entries()) {
+    body[key] = value;
+  }
+
   return await iterateModelProviders(c, async (modelName, provider) => {
     const reqBody = { ...body } as ImageEditParamsBase;
     reqBody.model = modelName;
