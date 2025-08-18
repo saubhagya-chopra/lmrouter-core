@@ -25,8 +25,7 @@ export type OpenAIChatCompletionAdapter = LMRouterAdapter<
 
 const adapters: Record<string, new () => OpenAIChatCompletionAdapter> = {
   anthropic: OpenAIChatCompletionAnthropicAdapter,
-  openai: OpenAIChatCompletionOpenAIAdapter,
-  openai_woresp: OpenAIChatCompletionOpenAIAdapter,
+  others: OpenAIChatCompletionOpenAIAdapter,
 };
 
 export class OpenAIChatCompletionAdapterFactory {
@@ -34,7 +33,7 @@ export class OpenAIChatCompletionAdapterFactory {
     provider: LMRouterCoreConfigProvider,
   ): OpenAIChatCompletionAdapter {
     if (!Object.keys(adapters).includes(provider.type)) {
-      throw new Error(`Unsupported provider: ${provider.type}`);
+      return new adapters.others();
     }
     return new adapters[provider.type]();
   }
