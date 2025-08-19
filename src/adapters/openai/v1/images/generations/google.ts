@@ -89,7 +89,7 @@ export class OpenAIImageGenerationGoogleAdapter
             : request.quality === "low" || request.quality === "medium"
               ? "1K"
               : undefined,
-        enhancePrompt: request.prompt_upsampling,
+        enhancePrompt: request.enhance_prompt,
       },
     };
   }

@@ -10,7 +10,7 @@ declare module "openai/resources/images" {
     seed?: number;
     guidance_scale?: number;
     num_inference_steps?: number;
-    prompt_upsampling?: boolean;
+    enhance_prompt?: boolean;
     safety_tolerance?: number;
   }
 
@@ -20,7 +20,7 @@ declare module "openai/resources/images" {
     seed?: number;
     guidance_scale?: number;
     num_inference_steps?: number;
-    prompt_upsampling?: boolean;
+    enhance_prompt?: boolean;
     safety_tolerance?: number;
   }
 

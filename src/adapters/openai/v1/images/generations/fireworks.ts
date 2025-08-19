@@ -173,7 +173,7 @@ export class OpenAIImageGenerationFireworksAdapter
       prompt: request.prompt,
       seed: request.seed,
       aspect_ratio: request.aspect_ratio as string | undefined,
-      prompt_upsampling: request.prompt_upsampling,
+      prompt_upsampling: request.enhance_prompt,
       safety_tolerance: request.safety_tolerance,
     };
   }
