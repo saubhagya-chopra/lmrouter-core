@@ -1,5 +1,5 @@
 {
-  "name": "lmrouter",
+  "name": "@lmrouter/cli",
   "version": "0.1.0",
   "description": "LMRouter",
   "homepage": "https://lmrouter.com/",
