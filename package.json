@@ -1,14 +1,14 @@
 {
-  "name": "lmrouter-core",
+  "name": "lmrouter",
   "version": "0.1.0",
-  "description": "LMRouter Core",
+  "description": "LMRouter",
   "homepage": "https://lmrouter.com/",
   "bugs": {
-    "url": "https://github.com/LMRouter/lmrouter-core/issues"
+    "url": "https://github.com/LMRouter/lmrouter/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LMRouter/lmrouter-core.git"
+    "url": "git+https://github.com/LMRouter/lmrouter.git"
   },
   "license": "MIT",
   "author": "LMRouter Contributors",

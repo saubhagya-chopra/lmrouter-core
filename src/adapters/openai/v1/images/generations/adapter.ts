@@ -11,7 +11,7 @@ import { LMRouterAdapter } from "../../../../adapter.js";
 import { OpenAIImageGenerationFireworksAdapter } from "./fireworks.js";
 import { OpenAIImageGenerationGoogleAdapter } from "./google.js";
 import { OpenAIImageGenerationOpenAIAdapter } from "./openai.js";
-import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export type OpenAIImageGenerationAdapter = LMRouterAdapter<
   ImageGenerateParamsBase,
@@ -28,7 +28,7 @@ const adapters: Record<string, new () => OpenAIImageGenerationAdapter> = {
 
 export class OpenAIImageGenerationAdapterFactory {
   static getAdapter(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
   ): OpenAIImageGenerationAdapter {
     if (!Object.keys(adapters).includes(provider.type)) {
       return new adapters.others();

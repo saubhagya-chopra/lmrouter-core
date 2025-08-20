@@ -19,7 +19,7 @@ app.use(cors());
 
 app.get("/", (c) => {
   return c.json({
-    message: "Welcome to LMRouter Core!",
+    message: "Welcome to LMRouter!",
     uptime: getUptime(),
     apis_available: ["v1"],
   });

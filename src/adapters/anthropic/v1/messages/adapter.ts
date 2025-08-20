@@ -10,7 +10,7 @@ import type {
 import { LMRouterAdapter } from "../../../adapter.js";
 import { AnthropicMessagesAnthropicAdapter } from "./anthropic.js";
 import { AnthropicMessagesOthersAdapter } from "./others.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export type AnthropicMessagesAdapter = LMRouterAdapter<
   MessageCreateParamsBase,
@@ -26,7 +26,7 @@ const adapters: Record<string, new () => AnthropicMessagesAdapter> = {
 
 export class AnthropicMessagesAdapterFactory {
   static getAdapter(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
   ): AnthropicMessagesAdapter {
     if (!Object.keys(adapters).includes(provider.type)) {
       return new adapters.others();

@@ -8,11 +8,11 @@ import type {
 } from "openai/resources/embeddings";
 
 import type { OpenAIEmbeddingsAdapter } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class OpenAIEmbeddingsOpenAIAdapter implements OpenAIEmbeddingsAdapter {
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: EmbeddingCreateParams,
     options?: {},
   ): Promise<CreateEmbeddingResponse> {
@@ -29,7 +29,7 @@ export class OpenAIEmbeddingsOpenAIAdapter implements OpenAIEmbeddingsAdapter {
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: EmbeddingCreateParams,
     options?: {},
   ): AsyncGenerator<never> {

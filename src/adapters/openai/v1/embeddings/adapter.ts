@@ -8,7 +8,7 @@ import type {
 
 import { LMRouterAdapter } from "../../../adapter.js";
 import { OpenAIEmbeddingsOpenAIAdapter } from "./openai.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export type OpenAIEmbeddingsAdapter = LMRouterAdapter<
   EmbeddingCreateParams,
@@ -22,9 +22,7 @@ const adapters: Record<string, new () => OpenAIEmbeddingsAdapter> = {
 };
 
 export class OpenAIEmbeddingsAdapterFactory {
-  static getAdapter(
-    provider: LMRouterCoreConfigProvider,
-  ): OpenAIEmbeddingsAdapter {
+  static getAdapter(provider: LMRouterConfigProvider): OpenAIEmbeddingsAdapter {
     if (!Object.keys(adapters).includes(provider.type)) {
       return new adapters.others();
     }

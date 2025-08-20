@@ -1,4 +1,4 @@
-# LMRouter Core
+# LMRouter
 
 **LMRouter** is an open-source, all-in-one API router that gives AI developers a single, unified way to connect to the best model providers.
 
@@ -14,31 +14,29 @@ It’s an **open-source alternative to OpenRouter**, but goes far beyond languag
 - **Search**: Jina, Exa, and other web search APIs (coming soon)
 - **Code**: Execution with interpreters such as e2b (coming soon)
 
-At the center of this ecosystem is **LMRouter Core**, the high-performance routing engine that handles request forwarding and model proxying.
-
 ## Quick Start
 
 LMRouter is still under active development. When the full service is launched, it will be available at [lmrouter.com](https://lmrouter.com).
 
-For now, you can try out LMRouter Core by connecting **Claude Code** to the demo server. This allows Claude Code to run on any model available through OpenRouter, not just Claude itself.
+For now, you can try out LMRouter by connecting **Claude Code** to the demo server. This allows Claude Code to run on any model available through OpenRouter, not just Claude itself.
 
 The demo environment proxies requests to OpenRouter and supports both the **OpenAI Chat Completions API** and the **Anthropic Messages API**. It runs in **BYOK (Bring Your Own Key)** mode, which means you’ll need to supply your own OpenRouter API key.
 
-**Connect Claude Code to LMRouter Core**
+**Connect Claude Code to LMRouter**
 
 ```bash
-ANTHROPIC_BASE_URL=https://core.lmrouter.com/v1/anthropic \
+ANTHROPIC_BASE_URL=https://api.lmrouter.com/v1/anthropic \
 ANTHROPIC_AUTH_TOKEN=BYOK:<YOUR_OPENROUTER_API_KEY> \
 ANTHROPIC_MODEL=<YOUR_MODEL_NAME> claude
 ```
 
 ### 🛠️ Local Development/Deployment
 
-To setup LMRouter Core locally, make sure you have Node.js installed, then follow these steps:
+To setup LMRouter locally, make sure you have Node.js installed, then follow these steps:
 
 ```bash
-git clone https://github.com/LMRouter/lmrouter-core
-cd lmrouter-core
+git clone https://github.com/LMRouter/lmrouter
+cd lmrouter
 npm install
 cp config/config.example.yaml config/config.yaml
 ```
@@ -58,7 +56,7 @@ npm start
 
 ### API Compatibility
 
-LMRouter Core provides drop-in compatibility with existing APIs, so applications that already work with OpenAI or Anthropic can integrate without changes:
+LMRouter provides drop-in compatibility with existing APIs, so applications that already work with OpenAI or Anthropic can integrate without changes:
 
 ```
 OpenAI API
@@ -85,7 +83,7 @@ LMRouter connects to the broader AI ecosystem, with built-in support for:
 
 ### Multi-Runtime Deployment
 
-LMRouter Core is built on [Hono](https://hono.dev/) and runs in multiple environments:
+LMRouter is built on [Hono](https://hono.dev/) and runs in multiple environments:
 
 - **Node.js** — Standard server deployment
 - **Cloudflare Workers** — Lightweight edge deployment at scale
@@ -112,4 +110,4 @@ No contribution is too small, even a typo fix helps. And if you have big ideas, 
 
 ## License
 
-LMRouter Core is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+LMRouter is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.

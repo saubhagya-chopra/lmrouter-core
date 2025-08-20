@@ -26,20 +26,18 @@ import {
   OpenAIChatCompletionAdapterFactory,
   type OpenAIChatCompletionAdapter,
 } from "../chat/adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 import { ResponsesStoreFactory } from "../../../../utils/responses-store.js";
 
 export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
   response: Response | undefined;
 
-  getAdapter(
-    provider: LMRouterCoreConfigProvider,
-  ): OpenAIChatCompletionAdapter {
+  getAdapter(provider: LMRouterConfigProvider): OpenAIChatCompletionAdapter {
     return OpenAIChatCompletionAdapterFactory.getAdapter(provider);
   }
 
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ResponseCreateParamsBase,
     options?: OpenAIResponsesInputOptions,
   ): Promise<Response> {
@@ -57,7 +55,7 @@ export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ResponseCreateParamsBase,
     options?: OpenAIResponsesInputOptions,
   ): AsyncGenerator<ResponseStreamEvent> {

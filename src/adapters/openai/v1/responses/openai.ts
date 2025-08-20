@@ -13,12 +13,12 @@ import type {
   OpenAIResponsesAdapter,
   OpenAIResponsesInputOptions,
 } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
   response: Response | undefined;
 
-  getClient(provider: LMRouterCoreConfigProvider): OpenAI {
+  getClient(provider: LMRouterConfigProvider): OpenAI {
     return new OpenAI({
       baseURL: provider.base_url,
       apiKey: provider.api_key,
@@ -30,7 +30,7 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
   }
 
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ResponseCreateParamsBase,
     options?: OpenAIResponsesInputOptions,
   ): Promise<Response> {
@@ -40,7 +40,7 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ResponseCreateParamsBase,
     options?: OpenAIResponsesInputOptions,
   ): AsyncGenerator<ResponseStreamEvent> {

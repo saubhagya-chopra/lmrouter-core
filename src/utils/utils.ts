@@ -5,8 +5,8 @@ import type { Context } from "hono";
 
 import {
   getConfig,
-  type LMRouterCoreConfigModel,
-  type LMRouterCoreConfigProvider,
+  type LMRouterConfigModel,
+  type LMRouterConfigProvider,
 } from "./config.js";
 import type { ContextEnv } from "../types/hono.js";
 
@@ -22,7 +22,7 @@ export const getUptime = () => {
 export const getModel = (
   modelName: string,
   c: Context<ContextEnv>,
-): LMRouterCoreConfigModel | null => {
+): LMRouterConfigModel | null => {
   const cfg = getConfig(c);
 
   const colonIndex = modelName.indexOf(":");
@@ -58,7 +58,7 @@ export const getModel = (
 
 export const iterateModelProviders = async (
   c: Context<ContextEnv>,
-  cb: (modelName: string, provider: LMRouterCoreConfigProvider) => Promise<any>,
+  cb: (modelName: string, provider: LMRouterConfigProvider) => Promise<any>,
 ): Promise<any> => {
   const cfg = getConfig(c);
   let error: any = null;

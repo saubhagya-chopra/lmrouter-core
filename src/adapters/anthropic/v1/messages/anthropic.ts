@@ -10,12 +10,12 @@ import type {
 } from "@anthropic-ai/sdk/resources/messages";
 
 import type { AnthropicMessagesAdapter } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class AnthropicMessagesAnthropicAdapter
   implements AnthropicMessagesAdapter
 {
-  getClient(provider: LMRouterCoreConfigProvider): Anthropic {
+  getClient(provider: LMRouterConfigProvider): Anthropic {
     return new Anthropic({
       baseURL: provider.base_url,
       apiKey: provider.api_key,
@@ -24,7 +24,7 @@ export class AnthropicMessagesAnthropicAdapter
   }
 
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: MessageCreateParamsBase,
     options?: {},
   ): Promise<Message> {
@@ -34,7 +34,7 @@ export class AnthropicMessagesAnthropicAdapter
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: MessageCreateParamsBase,
     options?: {},
   ): AsyncGenerator<RawMessageStreamEvent> {

@@ -13,12 +13,12 @@ import type {
   OpenAIChatCompletionAdapter,
   OpenAIChatCompletionInputOptions,
 } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class OpenAIChatCompletionOpenAIAdapter
   implements OpenAIChatCompletionAdapter
 {
-  getClient(provider: LMRouterCoreConfigProvider): OpenAI {
+  getClient(provider: LMRouterConfigProvider): OpenAI {
     return new OpenAI({
       baseURL: provider.base_url,
       apiKey: provider.api_key,
@@ -30,7 +30,7 @@ export class OpenAIChatCompletionOpenAIAdapter
   }
 
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ChatCompletionCreateParamsBase,
     options?: OpenAIChatCompletionInputOptions,
   ): Promise<ChatCompletion> {
@@ -40,7 +40,7 @@ export class OpenAIChatCompletionOpenAIAdapter
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ChatCompletionCreateParamsBase,
     options?: OpenAIChatCompletionInputOptions,
   ): AsyncGenerator<ChatCompletionChunk> {

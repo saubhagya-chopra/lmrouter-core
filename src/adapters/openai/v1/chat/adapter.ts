@@ -10,7 +10,7 @@ import type {
 import { LMRouterAdapter } from "../../../adapter.js";
 import { OpenAIChatCompletionAnthropicAdapter } from "./anthropic.js";
 import { OpenAIChatCompletionOpenAIAdapter } from "./openai.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export type OpenAIChatCompletionInputOptions = {
   maxTokens?: number;
@@ -30,7 +30,7 @@ const adapters: Record<string, new () => OpenAIChatCompletionAdapter> = {
 
 export class OpenAIChatCompletionAdapterFactory {
   static getAdapter(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
   ): OpenAIChatCompletionAdapter {
     if (!Object.keys(adapters).includes(provider.type)) {
       return new adapters.others();

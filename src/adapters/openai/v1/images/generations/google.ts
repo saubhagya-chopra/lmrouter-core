@@ -18,19 +18,19 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageGenerationAdapter } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageGenerationGoogleAdapter
   implements OpenAIImageGenerationAdapter
 {
-  getClient(provider: LMRouterCoreConfigProvider): GoogleGenAI {
+  getClient(provider: LMRouterConfigProvider): GoogleGenAI {
     return new GoogleGenAI({
       apiKey: provider.api_key,
     });
   }
 
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
     options?: {},
   ): Promise<ImagesResponse> {
@@ -41,7 +41,7 @@ export class OpenAIImageGenerationGoogleAdapter
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
     options?: {},
   ): AsyncGenerator<ImageGenStreamEvent> {
@@ -49,7 +49,7 @@ export class OpenAIImageGenerationGoogleAdapter
   }
 
   async sendRequestImagen(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
   ): Promise<ImagesResponse> {
     const ai = this.getClient(provider);
@@ -60,7 +60,7 @@ export class OpenAIImageGenerationGoogleAdapter
   }
 
   async sendRequestGemini(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
   ): Promise<ImagesResponse> {
     const ai = this.getClient(provider);

@@ -15,11 +15,11 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageEditAdapter } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageEditGoogleAdapter implements OpenAIImageEditAdapter {
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageEditParamsBase,
     options?: {},
   ): Promise<ImagesResponse> {
@@ -33,7 +33,7 @@ export class OpenAIImageEditGoogleAdapter implements OpenAIImageEditAdapter {
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageEditParamsBase,
     options?: {},
   ): AsyncGenerator<ImageEditStreamEvent> {

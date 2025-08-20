@@ -11,7 +11,7 @@ import { LMRouterAdapter } from "../../../../adapter.js";
 import { OpenAIImageEditFireworksAdapter } from "./fireworks.js";
 import { OpenAIImageEditGoogleAdapter } from "./google.js";
 import { OpenAIImageEditOpenAIAdapter } from "./openai.js";
-import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export type OpenAIImageEditAdapter = LMRouterAdapter<
   ImageEditParamsBase,
@@ -27,9 +27,7 @@ const adapters: Record<string, new () => OpenAIImageEditAdapter> = {
 };
 
 export class OpenAIImageEditAdapterFactory {
-  static getAdapter(
-    provider: LMRouterCoreConfigProvider,
-  ): OpenAIImageEditAdapter {
+  static getAdapter(provider: LMRouterConfigProvider): OpenAIImageEditAdapter {
     if (!Object.keys(adapters).includes(provider.type)) {
       return new adapters.others();
     }

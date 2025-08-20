@@ -10,7 +10,7 @@ import type {
 import { LMRouterAdapter } from "../../../adapter.js";
 import { OpenAIResponsesOpenAIAdapter } from "./openai.js";
 import { OpenAIResponsesOthersAdapter } from "./others.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export type OpenAIResponsesInputOptions = {
   maxTokens?: number;
@@ -32,9 +32,7 @@ const adapters: Record<string, new () => OpenAIResponsesAdapter> = {
 };
 
 export class OpenAIResponsesAdapterFactory {
-  static getAdapter(
-    provider: LMRouterCoreConfigProvider,
-  ): OpenAIResponsesAdapter {
+  static getAdapter(provider: LMRouterConfigProvider): OpenAIResponsesAdapter {
     if (!Object.keys(adapters).includes(provider.type)) {
       return new adapters.others();
     }

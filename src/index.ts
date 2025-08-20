@@ -16,7 +16,7 @@ const main = () => {
     },
     (info) => {
       console.log(
-        `LMRouter Core listening on http://${info.family === "IPv4" ? info.address : `[${info.address}]`}:${info.port}/`,
+        `LMRouter listening on http://${info.family === "IPv4" ? info.address : `[${info.address}]`}:${info.port}/`,
       );
     },
   );

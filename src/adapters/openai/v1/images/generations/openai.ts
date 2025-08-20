@@ -10,12 +10,12 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageGenerationAdapter } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageGenerationOpenAIAdapter
   implements OpenAIImageGenerationAdapter
 {
-  getClient(provider: LMRouterCoreConfigProvider): OpenAI {
+  getClient(provider: LMRouterConfigProvider): OpenAI {
     return new OpenAI({
       baseURL: provider.base_url,
       apiKey: provider.api_key,
@@ -27,7 +27,7 @@ export class OpenAIImageGenerationOpenAIAdapter
   }
 
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
     options?: {},
   ): Promise<ImagesResponse> {
@@ -37,7 +37,7 @@ export class OpenAIImageGenerationOpenAIAdapter
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
     options?: {},
   ): AsyncGenerator<ImageGenStreamEvent> {

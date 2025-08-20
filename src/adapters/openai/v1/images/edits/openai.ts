@@ -10,10 +10,10 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageEditAdapter } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageEditOpenAIAdapter implements OpenAIImageEditAdapter {
-  getClient(provider: LMRouterCoreConfigProvider): OpenAI {
+  getClient(provider: LMRouterConfigProvider): OpenAI {
     return new OpenAI({
       baseURL: provider.base_url,
       apiKey: provider.api_key,
@@ -25,7 +25,7 @@ export class OpenAIImageEditOpenAIAdapter implements OpenAIImageEditAdapter {
   }
 
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageEditParamsBase,
     options?: {},
   ): Promise<ImagesResponse> {
@@ -35,7 +35,7 @@ export class OpenAIImageEditOpenAIAdapter implements OpenAIImageEditAdapter {
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageEditParamsBase,
     options?: {},
   ): AsyncGenerator<ImageEditStreamEvent> {

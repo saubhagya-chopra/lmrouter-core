@@ -8,7 +8,7 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageGenerationAdapter } from "./adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 import type {
   FireworksImageGenerationFlux1KontextRequest,
   FireworksImageGenerationFlux1KontextResponse,
@@ -22,7 +22,7 @@ export class OpenAIImageGenerationFireworksAdapter
   implements OpenAIImageGenerationAdapter
 {
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
     options?: {},
   ): Promise<ImagesResponse> {
@@ -33,7 +33,7 @@ export class OpenAIImageGenerationFireworksAdapter
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
     options?: {},
   ): AsyncGenerator<ImageGenStreamEvent> {
@@ -41,7 +41,7 @@ export class OpenAIImageGenerationFireworksAdapter
   }
 
   async sendRequestFlux1SchnellFp8(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
   ): Promise<ImagesResponse> {
     if (request.output_format && request.output_format !== "jpeg") {
@@ -69,7 +69,7 @@ export class OpenAIImageGenerationFireworksAdapter
   }
 
   async sendRequestFlux1Kontext(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
   ): Promise<ImagesResponse> {
     if (request.output_format && request.output_format !== "png") {

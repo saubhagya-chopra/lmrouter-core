@@ -6,45 +6,45 @@ import fs from "fs";
 import type { Context } from "hono";
 import yaml from "yaml";
 
-export interface LMRouterCoreConfigServer {
+export interface LMRouterConfigServer {
   host: string;
   port: number;
   logging: string;
 }
 
-export type LMRouterCoreConfigProviderType =
+export type LMRouterConfigProviderType =
   | "openai"
   | "openai_woresp"
   | "anthropic"
   | "fireworks"
   | "google";
 
-export interface LMRouterCoreConfigProvider {
-  type: LMRouterCoreConfigProviderType;
+export interface LMRouterConfigProvider {
+  type: LMRouterConfigProviderType;
   base_url?: string;
   api_key: string;
 }
 
-export interface LMRouterCoreConfigModelProvider {
+export interface LMRouterConfigModelProvider {
   provider: string;
   model: string;
 }
 
-export interface LMRouterCoreConfigModel {
+export interface LMRouterConfigModel {
   max_tokens?: number;
-  providers: LMRouterCoreConfigModelProvider[];
+  providers: LMRouterConfigModelProvider[];
 }
 
-export interface LMRouterCoreConfig {
-  server: LMRouterCoreConfigServer;
+export interface LMRouterConfig {
+  server: LMRouterConfigServer;
   access_keys: string[];
-  providers: Record<string, LMRouterCoreConfigProvider>;
-  models: Record<string, LMRouterCoreConfigModel>;
+  providers: Record<string, LMRouterConfigProvider>;
+  models: Record<string, LMRouterConfigModel>;
 }
 
-let configCache: LMRouterCoreConfig | null = null;
+let configCache: LMRouterConfig | null = null;
 
-export const getConfig = (c?: Context): LMRouterCoreConfig => {
+export const getConfig = (c?: Context): LMRouterConfig => {
   if (configCache) {
     return configCache;
   }
@@ -52,7 +52,7 @@ export const getConfig = (c?: Context): LMRouterCoreConfig => {
   if (c?.env.CONFIG) {
     configCache = yaml.parse(
       Buffer.from(c.env.CONFIG, "base64").toString("utf8"),
-    ) as LMRouterCoreConfig;
+    ) as LMRouterConfig;
     return configCache;
   }
 
@@ -63,6 +63,6 @@ export const getConfig = (c?: Context): LMRouterCoreConfig => {
 
   configCache = yaml.parse(
     fs.readFileSync(process.argv[2], "utf8"),
-  ) as LMRouterCoreConfig;
+  ) as LMRouterConfig;
   return configCache;
 };

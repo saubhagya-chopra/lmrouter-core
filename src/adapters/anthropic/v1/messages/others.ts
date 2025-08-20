@@ -23,19 +23,17 @@ import {
   type OpenAIChatCompletionAdapter,
   OpenAIChatCompletionAdapterFactory,
 } from "../../../openai/v1/chat/adapter.js";
-import type { LMRouterCoreConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class AnthropicMessagesOthersAdapter
   implements AnthropicMessagesAdapter
 {
-  getAdapter(
-    provider: LMRouterCoreConfigProvider,
-  ): OpenAIChatCompletionAdapter {
+  getAdapter(provider: LMRouterConfigProvider): OpenAIChatCompletionAdapter {
     return OpenAIChatCompletionAdapterFactory.getAdapter(provider);
   }
 
   async sendRequest(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: MessageCreateParamsBase,
     options?: {},
   ): Promise<Message> {
@@ -48,7 +46,7 @@ export class AnthropicMessagesOthersAdapter
   }
 
   async *sendRequestStreaming(
-    provider: LMRouterCoreConfigProvider,
+    provider: LMRouterConfigProvider,
     request: MessageCreateParamsBase,
     options?: {},
   ): AsyncGenerator<RawMessageStreamEvent> {
