@@ -1,30 +1,36 @@
 # LMRouter Core
 
-**LMRouter Core** is the core routing component of [**LMRouter**](https://lmrouter.com/), an open-source alternative to OpenRouter.
+**LMRouter** is an open-source, all-in-one API router that gives AI developers a single, unified way to connect to the best model providers.
 
-Our vision is to provide a comprehensive routing solution for the entire AI ecosystem, supporting language models, image generation, video generation, and embedding models. We provide interfaces compatible with OpenAI's [**Chat Completions API**](https://platform.openai.com/docs/api-reference/chat/create), as well as the new [**Responses API**](https://platform.openai.com/docs/api-reference/responses/create) and [**Anthropic's Messages API**](https://docs.anthropic.com/en/api/messages), enabling effortless integration with any applications that use these APIs.
+With LMRouter, you don’t need to create accounts on multiple platforms or juggle different API keys. A **single API key** unlocks access to **any provider, any model, any service**, all through one interface.
 
-> **Note**: LMRouter Core focuses specifically on request routing and model proxying. Advanced features like comprehensive API key management, user administration, billing systems, and analytics are handled by separate projects in the LMRouter ecosystem (currently in active development).
+It’s an **open-source alternative to OpenRouter**, but goes far beyond language models. LMRouter supports multiple modalities and services out of the box:
 
-## ⚡ Quick Start
+- **Language**: Chat Completions, Responses API, Anthropic Messages
+- **Image**: Image generation and editing
+- **Audio**: Speech-to-text and audio models (coming soon)
+- **Video**: Video generation (coming soon)
+- **Embeddings**: Semantic search and RAG
+- **Search**: Jina, Exa, and other web search APIs (coming soon)
+- **Code**: Execution with interpreters such as e2b (coming soon)
 
-### 🌐 Demo Server
+At the center of this ecosystem is **LMRouter Core**, the high-performance routing engine that handles request forwarding and model proxying.
 
-Try out LMRouter Core instantly with our live demo server at **https://core.lmrouter.com/**.
+## Quick Start
 
-This demo server simply proxies all requests to OpenRouter while exposing both OpenAI Chat Completions and Anthropic Messages APIs. It's perfect for connecting [**Claude Code**](https://www.anthropic.com/claude-code) to any OpenRouter model **without any additional setup on your side**. It's also running under BYOK (Bring Your Own Key) mode, so you need to provide your own API keys for OpenRouter.
+LMRouter is still under active development. When the full service is launched, it will be available at [lmrouter.com](https://lmrouter.com).
 
-#### 🔗 Claude Code
+For now, you can try out LMRouter Core by connecting **Claude Code** to the demo server. This allows Claude Code to run on any model available through OpenRouter, not just Claude itself.
 
-To connect with **Claude Code**, run in your terminal:
+The demo environment proxies requests to OpenRouter and supports both the **OpenAI Chat Completions API** and the **Anthropic Messages API**. It runs in **BYOK (Bring Your Own Key)** mode, which means you’ll need to supply your own OpenRouter API key.
+
+**Connect Claude Code to LMRouter Core**
 
 ```bash
 ANTHROPIC_BASE_URL=https://core.lmrouter.com/v1/anthropic \
 ANTHROPIC_AUTH_TOKEN=BYOK:<YOUR_OPENROUTER_API_KEY> \
 ANTHROPIC_MODEL=<YOUR_MODEL_NAME> claude
 ```
-
-Recently, it's popular to use `qwen/qwen3-coder`, `moonshotai/kimi-k2`, `openai/gpt-oss-120b`, and `openai/gpt-5[-mini]` (gpt-5 requires BYOK on OpenRouter) as the model for **Claude Code**, but feel free to use any model you want.
 
 ### 🛠️ Local Development/Deployment
 
@@ -35,9 +41,11 @@ git clone https://github.com/LMRouter/lmrouter-core
 cd lmrouter-core
 npm install
 cp config/config.example.yaml config/config.yaml
+```
 
-# Edit `config/config.yaml` to set up your own provider and model configurations.
+Edit `config/config.yaml` to set up your own provider and model configurations.
 
+```bash
 # Run the server in development mode
 npm run dev
 
@@ -46,103 +54,62 @@ npm run build
 npm start
 ```
 
-## ✨ Features
+## Features
 
-### 🤖 Multi-Modal AI Support
+### API Compatibility
 
-- **💬 Language Models**: Chat Completions, Responses API, and Anthropic Messages API with real-time streaming
-  - _Note: Responses API currently supports OpenAI models only; more providers will be supported in the future_
-- **🎨 Image Generation**: DALL-E 2/3, GPT-Image-1, and other OpenAI image models
-  - _Note: Expanded support for additional image generation providers coming soon_
-- **🔍 Embeddings**: Text embedding models for semantic search and RAG applications
-  - _Note: Expanded support for additional embeddings providers coming soon_
-- **🎬 Video Generation**: Video generation models support
-  - _Note: Video generation support coming soon_
+LMRouter Core provides drop-in compatibility with existing APIs, so applications that already work with OpenAI or Anthropic can integrate without changes:
 
-### 🔗 API Compatibility
+```
+OpenAI API
+  /v1/openai/v1/chat/completions   — Chat Completions
+  /v1/openai/v1/images/generations — Image generation
+  /v1/openai/v1/images/edits       — Image editing
+  /v1/openai/v1/embeddings         — Embeddings
+  /v1/openai/v1/responses          — Responses
+  /v1/openai/v1/models             — List available models
 
-**🟢 OpenAI API**:
+Anthropic API
+  /v1/anthropic/v1/messages        — Messages
+  /v1/anthropic/v1/models          — List available models
+```
 
-- `💬 /v1/openai/v1/chat/completions` — Chat Completions API
-- `🖼️ /v1/openai/v1/images/generations` — Image generation API
-- `✏️ /v1/openai/v1/images/edits` — Image editing API
-- `🔍 /v1/openai/v1/embeddings` — Embeddings API
-- `⚡ /v1/openai/v1/responses` — Responses API
-- `📋 /v1/openai/v1/models` — List available models
+### Multi-Provider Support
 
-**🟣 Anthropic API**:
+LMRouter connects to the broader AI ecosystem, with built-in support for:
 
-- `💬 /v1/anthropic/v1/messages` — Messages API
-- `📋 /v1/anthropic/v1/models` — List available models
+- **OpenAI-compatible** — OpenAI, Google, Perplexity, Fireworks, Groq, Cerebras, etc.
+- **Anthropic-compatible** — Anthropic, Amazon Bedrock, etc.
+- **Fireworks** — FLUX.1 [schnell] FP8, FLUX.1 Kontext Pro, FLUX.1 Kontext Max
+- **Google** — Imagen, Gemini image generation, etc.
 
-### 🌐 Multi-Provider Support
+### Multi-Runtime Deployment
 
-Connect to the entire AI ecosystem with support for:
+LMRouter Core is built on [Hono](https://hono.dev/) and runs in multiple environments:
 
-- **OpenAI** 🤖 — GPT models and beyond
-- **Anthropic** 🧠 — Claude family models
-- **Google** 🔍 — Gemini and other AI services
-- **OpenRouter** 🔄 — Access to 100+ models
-- **Custom Providers** ⚙️ — Any OpenAI/Anthropic-compatible API
+- **Node.js** — Standard server deployment
+- **Cloudflare Workers** — Lightweight edge deployment at scale
 
-### 🎯 Flexible Model Selection
+## Contributing
 
-**Two ways to specify models:**
+We believe LMRouter should be built **by the community, for the community**. Every contribution, whether it’s fixing a bug, adding a feature, improving documentation, or sharing feedback, helps make LMRouter stronger.
 
-1. **📋 Configuration-Based** — Define models in your `config.yaml`:
+### Roadmap
 
-   ```yaml
-   models:
-     gpt-4o:
-       providers:
-         - provider: openai
-           model: gpt-4o
-   ```
+Checkout our [Kanban](https://github.com/orgs/LMRouter/projects/1) for the latest roadmap.
 
-   Then use: `"model": "gpt-4o"`
+### How to Get Started
 
-2. **⚡ Direct Provider Syntax** — Use the `provider:model` format for instant access:
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/my-feature`)
+3. **Build** your changes, code, docs, or tests
+4. **Verify** everything works as expected
+5. **Submit** a pull request and join the conversation
 
-   ```json
-   {
-     "model": "openai:gpt-4o",
-     "messages": [...]
-   }
-   ```
+No contribution is too small, even a typo fix helps. And if you have big ideas, we’d love to hear them.
 
-   **Examples:**
-   - `openai:gpt-4o` → OpenAI's GPT-4o
-   - `anthropic:claude-sonnet-4-0` → Anthropic's Claude Sonnet 4
-   - `openrouter:qwen/qwen3-coder` → Any OpenRouter model
+> **Tip:** If you’re not sure where to start, check out the open issues labeled `good first issue`.
 
-   This syntax bypasses model configuration and routes directly to the specified provider, making it perfect for quick testing or dynamic model selection.
+## License
 
-### 🔐 Authentication & Security
-
-**Flexible Authentication Options:**
-
-- **🔑 API Key Authentication** — Simple, secure key validation
-- **🎒 BYOK (Bring Your Own Key)** — Use your provider keys with `BYOK:` prefix
-
-### ⚡ Multi-Runtime Support
-
-**Powered by Hono** — Deploy anywhere:
-
-- **🟢 Node.js** — Traditional server deployment
-- **☁️ Cloudflare Workers** — Edge computing at scale
-
-## 🤝 Contributing
-
-We love contributors! 💝 Help us make LMRouter even better:
-
-1. **🍴 Fork** the repository
-2. **🌿 Create** your feature branch (`git checkout -b feature/amazing-feature`)
-3. **💻 Code** your improvements
-4. **✅ Test** your changes
-5. **📤 Submit** a pull request
-
-Every contribution counts — from bug fixes to new features! 🚀
-
-## 📄 License
-
-LMRouter Core is licensed under the **MIT License**. see the [LICENSE](LICENSE) file for details.
+LMRouter Core is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
