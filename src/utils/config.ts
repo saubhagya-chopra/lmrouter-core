@@ -49,9 +49,9 @@ export const getConfig = (c?: Context): LMRouterConfig => {
     return configCache;
   }
 
-  if (c?.env.CONFIG) {
+  if (c?.env.LMROUTER_CONFIG) {
     configCache = yaml.parse(
-      Buffer.from(c.env.CONFIG, "base64").toString("utf8"),
+      Buffer.from(c.env.LMROUTER_CONFIG, "base64").toString("utf8"),
     ) as LMRouterConfig;
     return configCache;
   }
