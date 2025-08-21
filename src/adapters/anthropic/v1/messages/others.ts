@@ -18,7 +18,10 @@ import type {
   ChatCompletionMessageParam,
 } from "openai/resources/chat/completions";
 
-import type { AnthropicMessagesAdapter } from "./adapter.js";
+import type {
+  AnthropicMessagesAdapter,
+  AnthropicMessagesInputOptions,
+} from "./adapter.js";
 import {
   type OpenAIChatCompletionAdapter,
   OpenAIChatCompletionAdapterFactory,
@@ -35,12 +38,12 @@ export class AnthropicMessagesOthersAdapter
   async sendRequest(
     provider: LMRouterConfigProvider,
     request: MessageCreateParamsBase,
-    options?: {},
+    options?: AnthropicMessagesInputOptions,
   ): Promise<Message> {
     const adapter = this.getAdapter(provider);
     const response = await adapter.sendRequest(
       provider,
-      this.convertRequest(request),
+      this.convertRequest(request, options?.maxTokens),
     );
     return this.convertResponse(response);
   }
@@ -48,18 +51,19 @@ export class AnthropicMessagesOthersAdapter
   async *sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: MessageCreateParamsBase,
-    options?: {},
+    options?: AnthropicMessagesInputOptions,
   ): AsyncGenerator<RawMessageStreamEvent> {
     const adapter = this.getAdapter(provider);
     const stream = adapter.sendRequestStreaming(
       provider,
-      this.convertRequest(request),
+      this.convertRequest(request, options?.maxTokens),
     );
     yield* this.convertStream(stream);
   }
 
   convertRequest(
     request: MessageCreateParamsBase,
+    maxTokens?: number,
   ): ChatCompletionCreateParamsBase {
     return {
       messages: (
@@ -160,8 +164,7 @@ export class AnthropicMessagesOthersAdapter
           .flat(),
       ),
       model: request.model,
-      // TODO: Fix this workaround for Claude Code
-      max_completion_tokens: Math.min(request.max_tokens, 16384),
+      max_completion_tokens: Math.min(request.max_tokens, maxTokens ?? 16384),
       parallel_tool_calls:
         request.tool_choice !== undefined && request.tool_choice.type !== "none"
           ? !request.tool_choice.disable_parallel_tool_use

@@ -12,9 +12,13 @@ import { AnthropicMessagesAnthropicAdapter } from "./anthropic.js";
 import { AnthropicMessagesOthersAdapter } from "./others.js";
 import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
+export type AnthropicMessagesInputOptions = {
+  maxTokens?: number;
+};
+
 export type AnthropicMessagesAdapter = LMRouterAdapter<
   MessageCreateParamsBase,
-  {},
+  AnthropicMessagesInputOptions,
   Message,
   RawMessageStreamEvent
 >;

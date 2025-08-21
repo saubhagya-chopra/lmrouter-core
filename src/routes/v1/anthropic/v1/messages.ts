@@ -23,11 +23,15 @@ messagesRouter.post("/", async (c) => {
 
     const adapter = AnthropicMessagesAdapterFactory.getAdapter(provider);
     if (reqBody.stream !== true) {
-      const completion = await adapter.sendRequest(provider, reqBody);
+      const completion = await adapter.sendRequest(provider, reqBody, {
+        maxTokens: providerCfg.max_tokens,
+      });
       return c.json(completion);
     }
 
-    const s = adapter.sendRequestStreaming(provider, reqBody);
+    const s = adapter.sendRequestStreaming(provider, reqBody, {
+      maxTokens: providerCfg.max_tokens,
+    });
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {
         await stream.writeSSE({

@@ -68,11 +68,13 @@ export class OpenAIChatCompletionAnthropicAdapter
         : undefined;
 
     return {
-      max_tokens:
+      max_tokens: Math.min(
         request.max_completion_tokens ??
-        request.max_tokens ??
-        maxTokens ??
-        8192,
+          request.max_tokens ??
+          maxTokens ??
+          8192,
+        maxTokens ?? Infinity,
+      ),
       messages: request.messages
         .filter(
           (message) =>

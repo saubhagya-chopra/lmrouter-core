@@ -26,6 +26,7 @@ export const getModel = (
 ): LMRouterConfigModel | null => {
   const cfg = getConfig(c);
 
+  // TODO: Since we can't retrieve the pricing information, this feature should be disabled when billing is enabled.
   const colonIndex = modelName.indexOf(":");
   if (colonIndex !== -1) {
     const providerName = modelName.slice(0, colonIndex);
@@ -49,6 +50,8 @@ export const getModel = (
   if (!cfg.models["*"]) {
     return null;
   }
+
+  // TODO: Same as above, this feature should be disabled when billing is enabled.
   return {
     providers: cfg.models["*"].providers.map((provider) => ({
       provider: provider.provider,
