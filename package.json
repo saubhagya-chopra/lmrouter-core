@@ -1,6 +1,6 @@
 {
   "name": "@lmrouter/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An open-source, all-in-one AI API router",
   "homepage": "https://lmrouter.com/",
   "bugs": {
