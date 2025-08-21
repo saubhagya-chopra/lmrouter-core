@@ -52,6 +52,12 @@ npm run build
 npm start
 ```
 
+Alternatively, you can use `npx` to run the server:
+
+```bash
+npx @lmrouter/cli /path/to/config.yaml
+```
+
 ## Features
 
 ### API Compatibility
