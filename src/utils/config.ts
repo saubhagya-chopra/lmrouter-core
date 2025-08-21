@@ -25,13 +25,27 @@ export interface LMRouterConfigProvider {
   api_key: string;
 }
 
+export interface LMRouterConfigModelProviderPricing {
+  input?: number;
+  output?: number;
+  image?: number;
+  request?: number;
+  input_cache_reads?: number;
+  input_cache_writes?: number;
+}
+
 export interface LMRouterConfigModelProvider {
   provider: string;
   model: string;
+  context_window?: number;
+  max_tokens?: number;
+  pricing?: LMRouterConfigModelProviderPricing;
 }
 
 export interface LMRouterConfigModel {
-  max_tokens?: number;
+  name?: string;
+  description?: string;
+  created?: number;
   providers: LMRouterConfigModelProvider[];
 }
 

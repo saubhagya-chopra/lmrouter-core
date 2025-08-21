@@ -6,6 +6,7 @@ import type { Context } from "hono";
 import {
   getConfig,
   type LMRouterConfigModel,
+  type LMRouterConfigModelProvider,
   type LMRouterConfigProvider,
 } from "./config.js";
 import type { ContextEnv } from "../types/hono.js";
@@ -27,13 +28,13 @@ export const getModel = (
 
   const colonIndex = modelName.indexOf(":");
   if (colonIndex !== -1) {
-    const provider = modelName.slice(0, colonIndex);
-    const providerCfg = cfg.providers[provider];
-    if (providerCfg) {
+    const providerName = modelName.slice(0, colonIndex);
+    const provider = cfg.providers[providerName];
+    if (provider) {
       return {
         providers: [
           {
-            provider,
+            provider: providerName,
             model: modelName.slice(colonIndex + 1),
           },
         ],
@@ -58,7 +59,10 @@ export const getModel = (
 
 export const iterateModelProviders = async (
   c: Context<ContextEnv>,
-  cb: (modelName: string, provider: LMRouterConfigProvider) => Promise<any>,
+  cb: (
+    providerCfg: LMRouterConfigModelProvider,
+    provider: LMRouterConfigProvider,
+  ) => Promise<any>,
 ): Promise<any> => {
   const cfg = getConfig(c);
   let error: any = null;
@@ -74,17 +78,17 @@ export const iterateModelProviders = async (
     );
   }
 
-  for (const provider of c.var.model.providers) {
-    const providerCfg = cfg.providers[provider.provider];
-    if (!providerCfg) {
+  for (const providerCfg of c.var.model.providers) {
+    const provider = cfg.providers[providerCfg.provider];
+    if (!provider) {
       continue;
     }
 
-    const hydratedProviderCfg = { ...providerCfg };
-    hydratedProviderCfg.api_key = c.var.byok ?? providerCfg.api_key;
+    const hydratedProvider = { ...provider };
+    hydratedProvider.api_key = c.var.byok ?? provider.api_key;
 
     try {
-      return await cb(provider.model, hydratedProviderCfg);
+      return await cb(providerCfg, hydratedProvider);
     } catch (e) {
       error = e;
       if (cfg.server.logging === "dev") {

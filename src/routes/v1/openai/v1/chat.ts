@@ -17,9 +17,9 @@ chatRouter.use(auth, parseModel);
 
 chatRouter.post("/completions", async (c) => {
   const body = await c.req.json();
-  return await iterateModelProviders(c, async (modelName, provider) => {
+  return await iterateModelProviders(c, async (providerCfg, provider) => {
     const reqBody = { ...body } as ChatCompletionCreateParamsBase;
-    reqBody.model = modelName;
+    reqBody.model = providerCfg.model;
     if (reqBody.stream === true) {
       reqBody.stream_options = {
         include_usage: true,
@@ -29,13 +29,13 @@ chatRouter.post("/completions", async (c) => {
     const adapter = OpenAIChatCompletionAdapterFactory.getAdapter(provider);
     if (reqBody.stream !== true) {
       const completion = await adapter.sendRequest(provider, reqBody, {
-        maxTokens: c.var.model!.max_tokens,
+        maxTokens: providerCfg.max_tokens,
       });
       return c.json(completion);
     }
 
     const s = adapter.sendRequestStreaming(provider, reqBody, {
-      maxTokens: c.var.model!.max_tokens,
+      maxTokens: providerCfg.max_tokens,
     });
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {

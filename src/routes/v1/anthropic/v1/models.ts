@@ -26,19 +26,23 @@ modelsRouter.get("/:model{.+}", (c) => {
   return c.json({
     id: modelName,
     type: "model",
-    display_name: modelName,
-    created_at: "1970-01-01T00:00:00Z",
+    display_name: model.name ?? modelName,
+    created_at: model.created
+      ? new Date(model.created).toISOString()
+      : "1970-01-01T00:00:00Z",
   });
 });
 
 modelsRouter.get("/", (c) => {
   const cfg = getConfig(c);
-  const models = Object.keys(cfg.models).map((name) => {
+  const models = Object.entries(cfg.models).map(([name, model]) => {
     return {
       id: name,
       type: "model",
-      display_name: name,
-      created_at: "1970-01-01T00:00:00Z",
+      display_name: model.name ?? name,
+      created_at: model.created
+        ? new Date(model.created).toISOString()
+        : "1970-01-01T00:00:00Z",
     };
   });
 

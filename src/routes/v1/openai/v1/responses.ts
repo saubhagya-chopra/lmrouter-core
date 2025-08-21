@@ -18,14 +18,14 @@ responsesRouter.use(auth, parseModel);
 
 responsesRouter.post("/", async (c) => {
   const body = await c.req.json();
-  return await iterateModelProviders(c, async (modelName, provider) => {
+  return await iterateModelProviders(c, async (providerCfg, provider) => {
     const reqBody = { ...body } as ResponseCreateParamsBase;
-    reqBody.model = modelName;
+    reqBody.model = providerCfg.model;
 
     const adapter = OpenAIResponsesAdapterFactory.getAdapter(provider);
     if (reqBody.stream !== true) {
       const response = await adapter.sendRequest(provider, reqBody, {
-        maxTokens: c.var.model!.max_tokens,
+        maxTokens: providerCfg.max_tokens,
       });
       if (reqBody.store !== false) {
         await ResponsesStoreFactory.getStore().set(reqBody, response);
@@ -34,7 +34,7 @@ responsesRouter.post("/", async (c) => {
     }
 
     const s = adapter.sendRequestStreaming(provider, reqBody, {
-      maxTokens: c.var.model!.max_tokens,
+      maxTokens: providerCfg.max_tokens,
     });
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {

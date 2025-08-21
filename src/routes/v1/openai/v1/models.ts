@@ -26,7 +26,7 @@ modelsRouter.get("/:model{.+}", (c) => {
   return c.json({
     id: modelName,
     object: "model",
-    created: 0,
+    created: model.created ?? 0,
     owned_by: model.providers.map((provider) => provider.provider).join(", "),
   });
 });
@@ -37,7 +37,7 @@ modelsRouter.get("/", (c) => {
     return {
       id: name,
       object: "model",
-      created: 0,
+      created: model.created ?? 0,
       owned_by: model.providers.map((provider) => provider.provider).join(", "),
     };
   });

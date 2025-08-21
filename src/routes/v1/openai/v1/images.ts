@@ -21,9 +21,9 @@ imagesRouter.use(auth, parseModel);
 
 imagesRouter.post("/generations", async (c) => {
   const body = await c.req.json();
-  return await iterateModelProviders(c, async (modelName, provider) => {
+  return await iterateModelProviders(c, async (providerCfg, provider) => {
     const reqBody = { ...body } as ImageGenerateParamsBase;
-    reqBody.model = modelName;
+    reqBody.model = providerCfg.model;
 
     const adapter = OpenAIImageGenerationAdapterFactory.getAdapter(provider);
     if (reqBody.stream !== true) {
@@ -57,9 +57,9 @@ imagesRouter.post("/edits", async (c) => {
     }
   }
 
-  return await iterateModelProviders(c, async (modelName, provider) => {
+  return await iterateModelProviders(c, async (providerCfg, provider) => {
     const reqBody = { ...body } as ImageEditParamsBase;
-    reqBody.model = modelName;
+    reqBody.model = providerCfg.model;
 
     const adapter = OpenAIImageEditAdapterFactory.getAdapter(provider);
     if (reqBody.stream !== true) {

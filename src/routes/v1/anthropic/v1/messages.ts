@@ -17,9 +17,9 @@ messagesRouter.use(auth, parseModel);
 
 messagesRouter.post("/", async (c) => {
   const body = await c.req.json();
-  return await iterateModelProviders(c, async (modelName, provider) => {
+  return await iterateModelProviders(c, async (providerCfg, provider) => {
     const reqBody = { ...body } as MessageCreateParamsBase;
-    reqBody.model = modelName;
+    reqBody.model = providerCfg.model;
 
     const adapter = AnthropicMessagesAdapterFactory.getAdapter(provider);
     if (reqBody.stream !== true) {

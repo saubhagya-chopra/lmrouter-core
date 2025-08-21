@@ -41,10 +41,10 @@ models:
       - provider: openai
         model: text-embedding-3-large
   anthropic/claude-sonnet-4:
-    max_tokens: 64000
     providers:
       - provider: anthropic
         model: claude-sonnet-4-0
+        max_tokens: 64000
   google/gemini-2.5-flash:
     providers:
       - provider: google

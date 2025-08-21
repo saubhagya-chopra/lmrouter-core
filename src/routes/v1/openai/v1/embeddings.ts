@@ -16,9 +16,9 @@ embeddingsRouter.use(auth, parseModel);
 
 embeddingsRouter.post("/", async (c) => {
   const body = await c.req.json();
-  return await iterateModelProviders(c, async (modelName, provider) => {
+  return await iterateModelProviders(c, async (providerCfg, provider) => {
     const reqBody = { ...body } as EmbeddingCreateParams;
-    reqBody.model = modelName;
+    reqBody.model = providerCfg.model;
 
     const adapter = OpenAIEmbeddingsAdapterFactory.getAdapter(provider);
     const embeddings = await adapter.sendRequest(provider, reqBody);
