@@ -23,7 +23,8 @@ providers:
     base_url: https://api.fireworks.ai/inference/v1
     api_key: sk-fireworks-api-key
   openrouter:
-    type: openai_woresp
+    type: openai
+    responses: false
     base_url: https://openrouter.ai/api/v1
     api_key: sk-openrouter-api-key
 

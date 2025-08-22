@@ -14,13 +14,14 @@ export interface LMRouterConfigServer {
 
 export type LMRouterConfigProviderType =
   | "openai"
-  | "openai_woresp"
   | "anthropic"
   | "fireworks"
   | "google";
 
 export interface LMRouterConfigProvider {
+  name?: string;
   type: LMRouterConfigProviderType;
+  responses?: boolean | "only";
   base_url?: string;
   api_key: string;
 }

@@ -33,7 +33,10 @@ const adapters: Record<string, new () => OpenAIResponsesAdapter> = {
 
 export class OpenAIResponsesAdapterFactory {
   static getAdapter(provider: LMRouterConfigProvider): OpenAIResponsesAdapter {
-    if (!Object.keys(adapters).includes(provider.type)) {
+    if (
+      !Object.keys(adapters).includes(provider.type) ||
+      provider.responses === false
+    ) {
       return new adapters.others();
     }
     return new adapters[provider.type]();
