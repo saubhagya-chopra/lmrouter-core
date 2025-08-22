@@ -6,6 +6,8 @@ import fs from "fs";
 import type { Context } from "hono";
 import yaml from "yaml";
 
+import type { ContextEnv } from "../types/hono.js";
+
 export interface LMRouterConfigServer {
   host: string;
   port: number;
@@ -59,7 +61,7 @@ export interface LMRouterConfig {
 
 let configCache: LMRouterConfig | null = null;
 
-export const getConfig = (c?: Context): LMRouterConfig => {
+export const getConfig = (c?: Context<ContextEnv>): LMRouterConfig => {
   if (configCache) {
     return configCache;
   }

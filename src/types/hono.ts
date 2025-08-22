@@ -8,4 +8,7 @@ export type ContextEnv = {
     byok?: string;
     model?: LMRouterConfigModel;
   };
+  Bindings: {
+    LMROUTER_CONFIG?: string;
+  };
 };
