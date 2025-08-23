@@ -42,7 +42,7 @@ export type LMRouterConfigProviderType =
 export interface LMRouterConfigProvider {
   name?: string;
   type: LMRouterConfigProviderType;
-  responses?: boolean | "only";
+  responses?: boolean;
   base_url?: string;
   api_key: string;
 }
@@ -61,6 +61,7 @@ export interface LMRouterConfigModelProvider {
   model: string;
   context_window?: number;
   max_tokens?: number;
+  responses_only?: boolean;
   pricing?: LMRouterConfigModelProviderPricing;
 }
 
