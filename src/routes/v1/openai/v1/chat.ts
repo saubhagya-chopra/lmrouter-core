@@ -6,14 +6,14 @@ import { streamSSE } from "hono/streaming";
 import type { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
 import { OpenAIChatCompletionAdapterFactory } from "../../../../adapters/openai/v1/chat/adapter.js";
-import { auth } from "../../../../middlewares/auth.js";
+import { requireAuth } from "../../../../middlewares/auth.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
 import { iterateModelProviders } from "../../../../utils/utils.js";
 
 const chatRouter = new Hono<ContextEnv>();
 
-chatRouter.use(auth, parseModel);
+chatRouter.use(requireAuth(), parseModel);
 
 chatRouter.post("/completions", async (c) => {
   const body = await c.req.json();

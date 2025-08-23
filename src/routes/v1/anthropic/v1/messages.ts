@@ -6,14 +6,14 @@ import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 
 import { AnthropicMessagesAdapterFactory } from "../../../../adapters/anthropic/v1/messages/adapter.js";
-import { auth } from "../../../../middlewares/auth.js";
+import { requireAuth } from "../../../../middlewares/auth.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
 import { iterateModelProviders } from "../../../../utils/utils.js";
 
 const messagesRouter = new Hono<ContextEnv>();
 
-messagesRouter.use(auth, parseModel);
+messagesRouter.use(requireAuth(), parseModel);
 
 messagesRouter.post("/", async (c) => {
   const body = await c.req.json();

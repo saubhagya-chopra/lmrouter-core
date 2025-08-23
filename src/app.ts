@@ -5,6 +5,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
+import { auth } from "./middlewares/auth.js";
 import rootAnthropicRouter from "./routes/anthropic.js";
 import rootOpenaiRouter from "./routes/openai.js";
 import v1Router from "./routes/v1.js";
@@ -29,6 +30,7 @@ app.use((c, next) => {
     credentials: true,
   })(c, next);
 });
+app.use(auth);
 
 app.get("/", (c) => {
   return c.json({

@@ -88,7 +88,8 @@ export const iterateModelProviders = async (
     }
 
     const hydratedProvider = { ...provider };
-    hydratedProvider.api_key = c.var.byok ?? provider.api_key;
+    hydratedProvider.api_key =
+      c.var.auth?.type === "byok" ? c.var.auth.byok : provider.api_key;
 
     try {
       return await cb(providerCfg, hydratedProvider);

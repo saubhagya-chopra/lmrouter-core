@@ -5,14 +5,14 @@ import { Hono } from "hono";
 import type { EmbeddingCreateParams } from "openai/resources";
 
 import { OpenAIEmbeddingsAdapterFactory } from "../../../../adapters/openai/v1/embeddings/adapter.js";
-import { auth } from "../../../../middlewares/auth.js";
+import { requireAuth } from "../../../../middlewares/auth.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
 import { iterateModelProviders } from "../../../../utils/utils.js";
 
 const embeddingsRouter = new Hono<ContextEnv>();
 
-embeddingsRouter.use(auth, parseModel);
+embeddingsRouter.use(requireAuth(), parseModel);
 
 embeddingsRouter.post("/", async (c) => {
   const body = await c.req.json();
