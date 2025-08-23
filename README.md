@@ -30,7 +30,7 @@ ANTHROPIC_AUTH_TOKEN=BYOK:<YOUR_OPENROUTER_API_KEY> \
 ANTHROPIC_MODEL=<YOUR_MODEL_NAME> claude
 ```
 
-### 🛠️ Local Development/Deployment
+### Local Development/Deployment
 
 To setup LMRouter locally, make sure you have Node.js installed, then follow these steps:
 
