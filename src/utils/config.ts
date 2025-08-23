@@ -65,8 +65,11 @@ export interface LMRouterConfigModelProvider {
   pricing?: LMRouterConfigModelProviderPricing;
 }
 
+export type LMRouterConfigModelType = "language" | "image" | "embedding";
+
 export interface LMRouterConfigModel {
   name?: string;
+  type?: LMRouterConfigModelType;
   description?: string;
   created?: number;
   providers: LMRouterConfigModelProvider[];
