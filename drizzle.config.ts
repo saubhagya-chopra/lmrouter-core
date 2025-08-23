@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 LMRouter Contributors
+
 import { defineConfig } from "drizzle-kit";
 
 import { getConfig } from "./src/utils/config.ts";

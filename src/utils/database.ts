@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 LMRouter Contributors
+
 import { drizzle } from "drizzle-orm/neon-http";
 import type { Context } from "hono";
 
