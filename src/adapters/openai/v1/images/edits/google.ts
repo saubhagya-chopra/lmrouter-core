@@ -8,6 +8,7 @@ import {
   Modality,
   type GenerateContentParameters,
 } from "@google/genai";
+import { HTTPException } from "hono/http-exception";
 import type {
   ImageEditParamsBase,
   ImageEditStreamEvent,
@@ -37,7 +38,9 @@ export class OpenAIImageEditGoogleAdapter implements OpenAIImageEditAdapter {
     request: ImageEditParamsBase,
     options?: {},
   ): AsyncGenerator<ImageEditStreamEvent> {
-    throw new Error("Google does not support streaming");
+    throw new HTTPException(400, {
+      message: "Google does not support streaming",
+    });
   }
 
   async convertRequest(

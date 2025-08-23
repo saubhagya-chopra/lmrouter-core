@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
+import { HTTPException } from "hono/http-exception";
 import OpenAI from "openai";
 import type {
   CreateEmbeddingResponse,
@@ -33,6 +34,8 @@ export class OpenAIEmbeddingsOpenAIAdapter implements OpenAIEmbeddingsAdapter {
     request: EmbeddingCreateParams,
     options?: {},
   ): AsyncGenerator<never> {
-    throw new Error("Embeddings API does not support streaming");
+    throw new HTTPException(400, {
+      message: "Embeddings API does not support streaming",
+    });
   }
 }

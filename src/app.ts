@@ -3,6 +3,7 @@
 
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
 
 import { auth } from "./middlewares/auth.js";
@@ -50,11 +51,12 @@ app.onError((err, c) => {
   return c.json(
     {
       error: {
-        message: "Internal Server Error",
+        message:
+          err instanceof HTTPException ? err.message : "Internal Server Error",
         stack: cfg.server.logging === "dev" ? err.stack : undefined,
       },
     },
-    500,
+    err instanceof HTTPException ? err.status : 500,
   );
 });
 

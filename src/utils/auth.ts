@@ -4,6 +4,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import type { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 import { getConfig } from "./config.js";
 import { getDb } from "./database.js";
@@ -18,7 +19,9 @@ export const getAuth = (
   if (!authCache) {
     const cfg = getConfig(c);
     if (!cfg.auth.enabled) {
-      throw new Error("Auth is not enabled");
+      throw new HTTPException(400, {
+        message: "Auth is not enabled",
+      });
     }
     authCache = betterAuth({
       baseURL: cfg.auth.better_auth.url,

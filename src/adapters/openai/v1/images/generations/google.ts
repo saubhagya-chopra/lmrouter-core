@@ -11,6 +11,7 @@ import {
   type GenerateContentParameters,
   type GenerateImagesParameters,
 } from "@google/genai";
+import { HTTPException } from "hono/http-exception";
 import type {
   ImageGenStreamEvent,
   ImageGenerateParamsBase,
@@ -45,7 +46,9 @@ export class OpenAIImageGenerationGoogleAdapter
     request: ImageGenerateParamsBase,
     options?: {},
   ): AsyncGenerator<ImageGenStreamEvent> {
-    throw new Error("Google does not support streaming");
+    throw new HTTPException(400, {
+      message: "Google does not support streaming",
+    });
   }
 
   async sendRequestImagen(

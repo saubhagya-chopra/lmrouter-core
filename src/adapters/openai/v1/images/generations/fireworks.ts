@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
+import { HTTPException } from "hono/http-exception";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type {
   ImageGenStreamEvent,
   ImageGenerateParamsBase,
@@ -8,7 +10,6 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageGenerationAdapter } from "./adapter.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 import type {
   FireworksImageGenerationFlux1KontextRequest,
   FireworksImageGenerationFlux1KontextResponse,
@@ -17,6 +18,7 @@ import type {
   FireworksImageGenerationGetFlux1KontextImageRequest,
   FireworksImageGenerationGetFlux1KontextImageResponse,
 } from "../../../../../types/fireworks.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageGenerationFireworksAdapter
   implements OpenAIImageGenerationAdapter
@@ -37,7 +39,9 @@ export class OpenAIImageGenerationFireworksAdapter
     request: ImageGenerateParamsBase,
     options?: {},
   ): AsyncGenerator<ImageGenStreamEvent> {
-    throw new Error("Fireworks does not support streaming");
+    throw new HTTPException(400, {
+      message: "Fireworks does not support streaming",
+    });
   }
 
   async sendRequestFlux1SchnellFp8(
@@ -45,7 +49,9 @@ export class OpenAIImageGenerationFireworksAdapter
     request: ImageGenerateParamsBase,
   ): Promise<ImagesResponse> {
     if (request.output_format && request.output_format !== "jpeg") {
-      throw new Error("Only JPEG is supported");
+      throw new HTTPException(400, {
+        message: "Only JPEG is supported",
+      });
     }
 
     const response = await fetch(
@@ -62,7 +68,9 @@ export class OpenAIImageGenerationFireworksAdapter
     );
 
     if (!response.ok) {
-      throw new Error(`Failed to generate image: ${response.statusText}`);
+      throw new HTTPException(response.status as ContentfulStatusCode, {
+        message: `Failed to generate image: ${response.statusText}`,
+      });
     }
 
     return await this.convertResponseFlux1SchnellFp8(response);
@@ -73,7 +81,9 @@ export class OpenAIImageGenerationFireworksAdapter
     request: ImageGenerateParamsBase,
   ): Promise<ImagesResponse> {
     if (request.output_format && request.output_format !== "png") {
-      throw new Error("Only PNG is supported");
+      throw new HTTPException(400, {
+        message: "Only PNG is supported",
+      });
     }
 
     const response = await fetch(
@@ -89,7 +99,9 @@ export class OpenAIImageGenerationFireworksAdapter
     );
 
     if (!response.ok) {
-      throw new Error(`Failed to generate image: ${response.statusText}`);
+      throw new HTTPException(response.status as ContentfulStatusCode, {
+        message: `Failed to generate image: ${response.statusText}`,
+      });
     }
 
     const requestId = (
@@ -116,7 +128,9 @@ export class OpenAIImageGenerationFireworksAdapter
       );
 
       if (!response2.ok) {
-        throw new Error(`Failed to get result: ${response2.statusText}`);
+        throw new HTTPException(response2.status as ContentfulStatusCode, {
+          message: `Failed to get result: ${response2.statusText}`,
+        });
       }
 
       const getResultResponse =
@@ -130,7 +144,9 @@ export class OpenAIImageGenerationFireworksAdapter
         return this.convertResponseFlux1Kontext(getResultResponse);
       }
 
-      throw new Error(`Failed to get result: ${getResultResponse.status}`);
+      throw new HTTPException(500, {
+        message: `Failed to get result: ${getResultResponse.status}`,
+      });
     }
   }
 
@@ -182,7 +198,9 @@ export class OpenAIImageGenerationFireworksAdapter
     response: FireworksImageGenerationGetFlux1KontextImageResponse,
   ): ImagesResponse {
     if (response.status !== "Ready") {
-      throw new Error(`Failed to get result: ${response.status}`);
+      throw new HTTPException(500, {
+        message: `Failed to get result: ${response.status}`,
+      });
     }
 
     return {

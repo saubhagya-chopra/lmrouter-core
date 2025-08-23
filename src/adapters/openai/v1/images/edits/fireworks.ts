@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
+import { HTTPException } from "hono/http-exception";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type {
   ImageEditStreamEvent,
   ImageEditParamsBase,
@@ -8,13 +10,13 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageEditAdapter } from "./adapter.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 import type {
   FireworksImageGenerationFlux1KontextRequest,
   FireworksImageGenerationFlux1KontextResponse,
   FireworksImageGenerationGetFlux1KontextImageRequest,
   FireworksImageGenerationGetFlux1KontextImageResponse,
 } from "../../../../../types/fireworks.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
   async sendRequest(
@@ -23,7 +25,9 @@ export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
     options?: {},
   ): Promise<ImagesResponse> {
     if (request.output_format && request.output_format !== "png") {
-      throw new Error("Only PNG is supported");
+      throw new HTTPException(400, {
+        message: "Only PNG is supported",
+      });
     }
 
     const response = await fetch(
@@ -39,7 +43,9 @@ export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
     );
 
     if (!response.ok) {
-      throw new Error(`Failed to generate image: ${response.statusText}`);
+      throw new HTTPException(response.status as ContentfulStatusCode, {
+        message: `Failed to generate image: ${response.statusText}`,
+      });
     }
 
     const requestId = (
@@ -66,7 +72,9 @@ export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
       );
 
       if (!response2.ok) {
-        throw new Error(`Failed to get result: ${response2.statusText}`);
+        throw new HTTPException(response2.status as ContentfulStatusCode, {
+          message: `Failed to get result: ${response2.statusText}`,
+        });
       }
 
       const getResultResponse =
@@ -80,7 +88,9 @@ export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
         return this.convertResponse(getResultResponse);
       }
 
-      throw new Error(`Failed to get result: ${getResultResponse.status}`);
+      throw new HTTPException(500, {
+        message: `Failed to get result: ${getResultResponse.status}`,
+      });
     }
   }
 
@@ -89,7 +99,9 @@ export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
     request: ImageEditParamsBase,
     options?: {},
   ): AsyncGenerator<ImageEditStreamEvent> {
-    throw new Error("Fireworks does not support streaming");
+    throw new HTTPException(400, {
+      message: "Fireworks does not support streaming",
+    });
   }
 
   async convertRequest(
@@ -115,7 +127,9 @@ export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
     response: FireworksImageGenerationGetFlux1KontextImageResponse,
   ): ImagesResponse {
     if (response.status !== "Ready") {
-      throw new Error(`Failed to get result: ${response.status}`);
+      throw new HTTPException(500, {
+        message: `Failed to get result: ${response.status}`,
+      });
     }
 
     return {
