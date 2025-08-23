@@ -27,7 +27,7 @@
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
     "auth:generate": "LMROUTER_CONFIG=$(base64 -w0 config/config.yaml) npx @better-auth/cli generate && mv auth-schema.ts src/models/auth.ts",
-    "db:generate": "LMROUTER_CONFIG=$(base64 -w0 config/config.yaml) drizzle-kit generate",
+    "db:generate": "NODE_OPTIONS='--import tsx' LMROUTER_CONFIG=$(base64 -w0 config/config.yaml) drizzle-kit generate",
     "db:migrate": "LMROUTER_CONFIG=$(base64 -w0 config/config.yaml) drizzle-kit migrate",
     "prepublishOnly": "npm run build"
   },
