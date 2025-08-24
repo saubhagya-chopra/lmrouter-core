@@ -26,11 +26,15 @@ import {
   OpenAIChatCompletionAdapterFactory,
   type OpenAIChatCompletionAdapter,
 } from "../chat/adapter.js";
-import type { LMRouterConfigProvider } from "../../../../utils/config.js";
+import type {
+  LMRouterConfigModelProviderPricing,
+  LMRouterConfigProvider,
+} from "../../../../utils/config.js";
 import { ResponsesStoreFactory } from "../../../../utils/responses-store.js";
 
 export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
-  response: Response | undefined;
+  usage?: LMRouterConfigModelProviderPricing;
+  response?: Response;
 
   getAdapter(provider: LMRouterConfigProvider): OpenAIChatCompletionAdapter {
     return OpenAIChatCompletionAdapterFactory.getAdapter(provider);
@@ -51,6 +55,7 @@ export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
         maxTokens: options?.maxTokens,
       },
     );
+    this.usage = adapter.usage;
     return this.convertResponse(response, request);
   }
 
@@ -75,6 +80,7 @@ export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
       }
       yield chunk;
     }
+    this.usage = adapter.usage;
   }
 
   convertRequest(
