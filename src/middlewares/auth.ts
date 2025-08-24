@@ -8,6 +8,7 @@ import { getAuth } from "../utils/auth.js";
 import { getConfig } from "../utils/config.js";
 
 export const auth = createMiddleware<ContextEnv>(async (c, next) => {
+  const cfg = getConfig(c);
   const apiKey =
     c.req.header("Authorization")?.split(" ")[1] ?? c.req.header("x-api-key");
   if (apiKey) {
@@ -20,7 +21,6 @@ export const auth = createMiddleware<ContextEnv>(async (c, next) => {
       return;
     }
 
-    const cfg = getConfig(c);
     if (cfg.access_keys.includes(apiKey)) {
       c.set("auth", {
         type: "access-key",
@@ -31,17 +31,19 @@ export const auth = createMiddleware<ContextEnv>(async (c, next) => {
     }
   }
 
-  const session = await getAuth(c).api.getSession({
-    headers: c.req.raw.headers,
-  });
-  if (session) {
-    c.set("auth", {
-      type: "better-auth",
-      user: session.user,
-      session: session.session,
+  if (cfg.auth.enabled) {
+    const session = await getAuth(c).api.getSession({
+      headers: c.req.raw.headers,
     });
-    await next();
-    return;
+    if (session) {
+      c.set("auth", {
+        type: "better-auth",
+        user: session.user,
+        session: session.session,
+      });
+      await next();
+      return;
+    }
   }
 
   await next();
