@@ -41,6 +41,8 @@ export class AnthropicMessagesAnthropicAdapter
     this.usage = {
       input: (message as Message).usage.input_tokens,
       output: (message as Message).usage.output_tokens,
+      web_search:
+        (message as Message).usage.server_tool_use?.web_search_requests ?? 0,
       request: 1,
       input_cache_reads:
         (message as Message).usage.cache_read_input_tokens ?? 0,
@@ -62,6 +64,7 @@ export class AnthropicMessagesAnthropicAdapter
         this.usage = {
           input: chunk.usage.input_tokens ?? 0,
           output: chunk.usage.output_tokens ?? 0,
+          web_search: chunk.usage.server_tool_use?.web_search_requests ?? 0,
           request: 1,
           input_cache_reads: chunk.usage.cache_read_input_tokens ?? 0,
           input_cache_writes: chunk.usage.cache_creation_input_tokens ?? 0,

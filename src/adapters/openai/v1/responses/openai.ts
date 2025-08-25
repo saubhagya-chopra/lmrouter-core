@@ -43,6 +43,9 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
     this.usage = {
       input: (response as Response).usage?.input_tokens ?? 0,
       output: (response as Response).usage?.output_tokens ?? 0,
+      web_search: (response as Response).output.filter(
+        (o) => o.type === "web_search_call",
+      ).length,
       request: 1,
       input_cache_reads:
         (response as Response).usage?.input_tokens_details.cached_tokens ?? 0,
@@ -62,6 +65,9 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
         this.usage = {
           input: chunk.response.usage?.input_tokens ?? 0,
           output: chunk.response.usage?.output_tokens ?? 0,
+          web_search: chunk.response.output.filter(
+            (o) => o.type === "web_search_call",
+          ).length,
           request: 1,
           input_cache_reads:
             chunk.response.usage?.input_tokens_details.cached_tokens ?? 0,

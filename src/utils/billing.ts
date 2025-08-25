@@ -29,6 +29,9 @@ export const calculateCost = (
     new Decimal(usage.output ?? 0).mul(pricing.output ?? 0).dividedBy(1000000),
   );
   cost = cost.plus(new Decimal(usage.image ?? 0).mul(pricing.image ?? 0));
+  cost = cost.plus(
+    new Decimal(usage.web_search ?? 0).mul(pricing.web_search ?? 0),
+  );
   cost = cost.plus(new Decimal(usage.request ?? 0).mul(pricing.request ?? 0));
   cost = cost.plus(
     new Decimal(usage.input_cache_reads ?? 0)

@@ -51,6 +51,7 @@ export interface LMRouterConfigModelProviderPricing {
   input?: number;
   output?: number;
   image?: number;
+  web_search?: number;
   request?: number;
   input_cache_reads?: number;
   input_cache_writes?: number;
