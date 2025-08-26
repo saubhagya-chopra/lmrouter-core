@@ -4,6 +4,7 @@
 import { sql } from "drizzle-orm";
 import { jsonb, numeric, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
+import type { LMRouterApiCallUsage } from "../utils/billing.js";
 import type { LMRouterConfigModelProviderPricing } from "../utils/config.js";
 
 export interface LedgerMetadataApiCall {
@@ -12,7 +13,7 @@ export interface LedgerMetadataApiCall {
     api_key_id?: string;
     model: string;
     endpoint: string;
-    usage?: LMRouterConfigModelProviderPricing;
+    usage?: LMRouterApiCallUsage;
     pricing?: LMRouterConfigModelProviderPricing;
   };
 }

@@ -16,13 +16,11 @@ import type {
   FireworksImageGenerationGetFlux1KontextImageRequest,
   FireworksImageGenerationGetFlux1KontextImageResponse,
 } from "../../../../../types/fireworks.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
 
   async sendRequest(
     provider: LMRouterConfigProvider,

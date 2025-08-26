@@ -9,13 +9,11 @@ import type {
 } from "openai/resources/embeddings";
 
 import type { OpenAIEmbeddingsAdapter } from "./adapter.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class OpenAIEmbeddingsOpenAIAdapter implements OpenAIEmbeddingsAdapter {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
 
   async sendRequest(
     provider: LMRouterConfigProvider,

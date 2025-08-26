@@ -10,13 +10,11 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageEditAdapter } from "./adapter.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageEditOpenAIAdapter implements OpenAIImageEditAdapter {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
 
   getClient(provider: LMRouterConfigProvider): OpenAI {
     return new OpenAI({

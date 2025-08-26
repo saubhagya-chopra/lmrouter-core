@@ -13,13 +13,11 @@ import type {
   OpenAIResponsesAdapter,
   OpenAIResponsesInputOptions,
 } from "./adapter.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
   response?: Response;
 
   getClient(provider: LMRouterConfigProvider): OpenAI {

@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../utils/config.js";
+import type { LMRouterApiCallUsage } from "../utils/billing.js";
+import type { LMRouterConfigProvider } from "../utils/config.js";
 
 export abstract class LMRouterAdapter<
   TInput,
@@ -12,7 +10,7 @@ export abstract class LMRouterAdapter<
   TOutput,
   TOutputStreamChunk,
 > {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
 
   abstract sendRequest(
     provider: LMRouterConfigProvider,

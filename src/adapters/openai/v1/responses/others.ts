@@ -26,14 +26,12 @@ import {
   OpenAIChatCompletionAdapterFactory,
   type OpenAIChatCompletionAdapter,
 } from "../chat/adapter.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 import { ResponsesStoreFactory } from "../../../../utils/responses-store.js";
 
 export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
   response?: Response;
 
   getAdapter(provider: LMRouterConfigProvider): OpenAIChatCompletionAdapter {

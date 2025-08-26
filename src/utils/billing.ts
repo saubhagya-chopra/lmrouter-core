@@ -13,8 +13,18 @@ import { getDb } from "./database.js";
 import { balance, ledger, type LedgerMetadata } from "../models/billing.js";
 import type { ContextEnv } from "../types/hono.js";
 
+export interface LMRouterApiCallUsage {
+  input?: number;
+  output?: number;
+  image?: number;
+  web_search?: number;
+  request?: number;
+  input_cache_reads?: number;
+  input_cache_writes?: number;
+}
+
 export const calculateCost = (
-  usage?: LMRouterConfigModelProviderPricing,
+  usage?: LMRouterApiCallUsage,
   pricing?: LMRouterConfigModelProviderPricing,
 ): Decimal => {
   let cost = new Decimal(0);

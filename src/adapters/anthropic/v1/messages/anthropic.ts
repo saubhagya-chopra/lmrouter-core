@@ -13,15 +13,13 @@ import type {
   AnthropicMessagesAdapter,
   AnthropicMessagesInputOptions,
 } from "./adapter.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class AnthropicMessagesAnthropicAdapter
   implements AnthropicMessagesAdapter
 {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
 
   getClient(provider: LMRouterConfigProvider): Anthropic {
     return new Anthropic({

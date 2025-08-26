@@ -13,15 +13,13 @@ import type {
   OpenAIChatCompletionAdapter,
   OpenAIChatCompletionInputOptions,
 } from "./adapter.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class OpenAIChatCompletionOpenAIAdapter
   implements OpenAIChatCompletionAdapter
 {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
 
   getClient(provider: LMRouterConfigProvider): OpenAI {
     return new OpenAI({

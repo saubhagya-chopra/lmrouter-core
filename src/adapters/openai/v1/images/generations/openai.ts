@@ -10,15 +10,13 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageGenerationAdapter } from "./adapter.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageGenerationOpenAIAdapter
   implements OpenAIImageGenerationAdapter
 {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
 
   getClient(provider: LMRouterConfigProvider): OpenAI {
     return new OpenAI({

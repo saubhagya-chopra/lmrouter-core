@@ -26,15 +26,13 @@ import {
   type OpenAIChatCompletionAdapter,
   OpenAIChatCompletionAdapterFactory,
 } from "../../../openai/v1/chat/adapter.js";
-import type {
-  LMRouterConfigModelProviderPricing,
-  LMRouterConfigProvider,
-} from "../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
+import type { LMRouterConfigProvider } from "../../../../utils/config.js";
 
 export class AnthropicMessagesOthersAdapter
   implements AnthropicMessagesAdapter
 {
-  usage?: LMRouterConfigModelProviderPricing;
+  usage?: LMRouterApiCallUsage;
 
   getAdapter(provider: LMRouterConfigProvider): OpenAIChatCompletionAdapter {
     return OpenAIChatCompletionAdapterFactory.getAdapter(provider);
