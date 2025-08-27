@@ -4,6 +4,7 @@
 import { Decimal } from "decimal.js";
 import { and, eq, sql } from "drizzle-orm";
 import type { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 import jsonLogic from "json-logic-js";
 
 import {
@@ -15,10 +16,15 @@ import { balance, ledger, type LedgerMetadata } from "../models/billing.js";
 import type { ContextEnv } from "../types/hono.js";
 
 export interface LMRouterApiCallUsage {
+  service_tier?: string;
   input?: number;
+  input_audio?: number;
   output?: number;
   image?: number;
+  image_quality?: string;
+  image_size?: string;
   web_search?: number;
+  code_interpreter?: number;
   request?: number;
   input_cache_reads?: number;
   input_cache_writes?: number;
@@ -38,6 +44,11 @@ export const calculateCost = (
       new Decimal(usage.input ?? 0).mul(pricing.input ?? 0).dividedBy(1000000),
     );
     cost = cost.plus(
+      new Decimal(usage.input_audio ?? 0)
+        .mul(pricing.input_audio ?? 0)
+        .dividedBy(1000000),
+    );
+    cost = cost.plus(
       new Decimal(usage.output ?? 0)
         .mul(pricing.output ?? 0)
         .dividedBy(1000000),
@@ -45,6 +56,11 @@ export const calculateCost = (
     cost = cost.plus(new Decimal(usage.image ?? 0).mul(pricing.image ?? 0));
     cost = cost.plus(
       new Decimal(usage.web_search ?? 0).mul(pricing.web_search ?? 0),
+    );
+    cost = cost.plus(
+      new Decimal(usage.code_interpreter ?? 0).mul(
+        pricing.code_interpreter ?? 0,
+      ),
     );
     cost = cost.plus(new Decimal(usage.request ?? 0).mul(pricing.request ?? 0));
     cost = cost.plus(
@@ -71,7 +87,9 @@ export const calculateCost = (
     }
   }
 
-  throw new Error("Unknown pricing type");
+  throw new HTTPException(500, {
+    message: "Unknown pricing type",
+  });
 };
 
 export const updateBilling = async (
