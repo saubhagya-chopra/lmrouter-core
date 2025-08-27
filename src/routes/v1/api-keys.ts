@@ -72,7 +72,7 @@ apiKeysRouter.patch("/:id", async (c) => {
         eq(apiKey.ownerId, auth.user.id),
       ),
     );
-  if (!key) {
+  if (key.length === 0) {
     return c.json({ error: { message: "API key not found" } }, 404);
   }
   await getDb(c).update(apiKey).set({ name }).where(eq(apiKey.id, id));
@@ -94,7 +94,7 @@ apiKeysRouter.delete("/:id", async (c) => {
         eq(apiKey.ownerId, auth.user.id),
       ),
     );
-  if (!key) {
+  if (key.length === 0) {
     return c.json({ error: { message: "API key not found" } }, 404);
   }
   await getDb(c).delete(apiKey).where(eq(apiKey.id, id));
