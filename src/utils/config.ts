@@ -51,6 +51,7 @@ export interface LMRouterConfigProvider {
 export interface LMRouterConfigModelProviderPricingFixed {
   type: "fixed";
   input?: number;
+  input_image?: number;
   input_audio?: number;
   output?: number;
   image?: number;

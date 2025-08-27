@@ -40,7 +40,16 @@ export class OpenAIChatCompletionOpenAIAdapter
     const openai = this.getClient(provider);
     const completion = await openai.chat.completions.create(request);
     this.usage = {
-      input: (completion as ChatCompletion).usage?.prompt_tokens ?? 0,
+      service_tier: (completion as ChatCompletion).service_tier ?? undefined,
+      input:
+        ((completion as ChatCompletion).usage?.prompt_tokens ?? 0) -
+        ((completion as ChatCompletion).usage?.prompt_tokens_details
+          ?.cached_tokens ?? 0) -
+        ((completion as ChatCompletion).usage?.prompt_tokens_details
+          ?.audio_tokens ?? 0),
+      input_audio:
+        (completion as ChatCompletion).usage?.prompt_tokens_details
+          ?.audio_tokens ?? 0,
       output: (completion as ChatCompletion).usage?.completion_tokens ?? 0,
       request: 1,
       input_cache_reads:
@@ -60,7 +69,12 @@ export class OpenAIChatCompletionOpenAIAdapter
     for await (const chunk of stream as Stream<ChatCompletionChunk>) {
       if (chunk.usage) {
         this.usage = {
-          input: chunk.usage.prompt_tokens,
+          service_tier: chunk.service_tier ?? undefined,
+          input:
+            chunk.usage.prompt_tokens -
+            (chunk.usage.prompt_tokens_details?.cached_tokens ?? 0) -
+            (chunk.usage.prompt_tokens_details?.audio_tokens ?? 0),
+          input_audio: chunk.usage.prompt_tokens_details?.audio_tokens ?? 0,
           output: chunk.usage.completion_tokens,
           request: 1,
           input_cache_reads:

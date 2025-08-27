@@ -18,6 +18,7 @@ import type { ContextEnv } from "../types/hono.js";
 export interface LMRouterApiCallUsage {
   service_tier?: string;
   input?: number;
+  input_image?: number;
   input_audio?: number;
   output?: number;
   image?: number;

@@ -39,10 +39,16 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
     const openai = this.getClient(provider);
     const response = await openai.responses.create(request);
     this.usage = {
-      input: (response as Response).usage?.input_tokens ?? 0,
+      service_tier: (response as Response).service_tier ?? undefined,
+      input:
+        ((response as Response).usage?.input_tokens ?? 0) -
+        ((response as Response).usage?.input_tokens_details.cached_tokens ?? 0),
       output: (response as Response).usage?.output_tokens ?? 0,
       web_search: (response as Response).output.filter(
         (o) => o.type === "web_search_call",
+      ).length,
+      code_interpreter: (response as Response).output.filter(
+        (o) => o.type === "code_interpreter_call",
       ).length,
       request: 1,
       input_cache_reads:
@@ -61,10 +67,16 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
     for await (const chunk of stream as Stream<ResponseStreamEvent>) {
       if (chunk.type === "response.completed") {
         this.usage = {
-          input: chunk.response.usage?.input_tokens ?? 0,
+          service_tier: chunk.response.service_tier ?? undefined,
+          input:
+            (chunk.response.usage?.input_tokens ?? 0) -
+            (chunk.response.usage?.input_tokens_details.cached_tokens ?? 0),
           output: chunk.response.usage?.output_tokens ?? 0,
           web_search: chunk.response.output.filter(
             (o) => o.type === "web_search_call",
+          ).length,
+          code_interpreter: chunk.response.output.filter(
+            (o) => o.type === "code_interpreter_call",
           ).length,
           request: 1,
           input_cache_reads:

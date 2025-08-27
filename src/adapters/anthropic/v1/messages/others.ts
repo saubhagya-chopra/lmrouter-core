@@ -260,7 +260,9 @@ export class AnthropicMessagesOthersAdapter
         cache_creation_input_tokens: null,
         cache_read_input_tokens:
           response.usage?.prompt_tokens_details?.cached_tokens ?? null,
-        input_tokens: response.usage?.prompt_tokens ?? 0,
+        input_tokens:
+          (response.usage?.prompt_tokens ?? 0) -
+          (response.usage?.prompt_tokens_details?.cached_tokens ?? 0),
         output_tokens: response.usage?.completion_tokens ?? 0,
         server_tool_use: null,
         service_tier:
@@ -434,7 +436,9 @@ export class AnthropicMessagesOthersAdapter
                   : null;
       }
       if (chunk.usage) {
-        usage.input_tokens = chunk.usage.prompt_tokens;
+        usage.input_tokens =
+          chunk.usage.prompt_tokens -
+          (chunk.usage.prompt_tokens_details?.cached_tokens ?? 0);
         usage.output_tokens = chunk.usage.completion_tokens;
         usage.cache_read_input_tokens =
           chunk.usage.prompt_tokens_details?.cached_tokens ?? null;

@@ -274,9 +274,13 @@ export class OpenAIChatCompletionAnthropicAdapter
             : null,
       usage: {
         completion_tokens: response.usage.output_tokens,
-        prompt_tokens: response.usage.input_tokens,
+        prompt_tokens:
+          response.usage.input_tokens +
+          (response.usage.cache_read_input_tokens ?? 0),
         total_tokens:
-          response.usage.output_tokens + response.usage.input_tokens,
+          response.usage.output_tokens +
+          response.usage.input_tokens +
+          (response.usage.cache_read_input_tokens ?? 0),
         prompt_tokens_details: {
           cached_tokens: response.usage.cache_read_input_tokens ?? undefined,
         },
@@ -378,9 +382,13 @@ export class OpenAIChatCompletionAnthropicAdapter
         chunk2.choices = [];
         chunk2.usage = {
           completion_tokens: event.usage.output_tokens,
-          prompt_tokens: messageStart?.usage.input_tokens ?? 0,
+          prompt_tokens:
+            (messageStart?.usage.input_tokens ?? 0) +
+            (messageStart?.usage.cache_read_input_tokens ?? 0),
           total_tokens:
-            event.usage.output_tokens + (messageStart?.usage.input_tokens ?? 0),
+            event.usage.output_tokens +
+            (messageStart?.usage.input_tokens ?? 0) +
+            (messageStart?.usage.cache_read_input_tokens ?? 0),
           prompt_tokens_details: {
             cached_tokens:
               messageStart?.usage.cache_read_input_tokens ?? undefined,
