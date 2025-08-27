@@ -57,10 +57,10 @@ models:
     providers:
       - provider: google
         model: imagen-4.0-generate-001
-  google/gemini-2.0-flash-preview-image-generation:
+  google/gemini-2.5-flash-image-preview:
     providers:
       - provider: google
-        model: gemini-2.0-flash-preview-image-generation
+        model: gemini-2.5-flash-image-preview
   black-forest-labs/flux-1-schnell-fp8:
     providers:
       - provider: fireworks

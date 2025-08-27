@@ -45,6 +45,11 @@ export const calculateCost = (
       new Decimal(usage.input ?? 0).mul(pricing.input ?? 0).dividedBy(1000000),
     );
     cost = cost.plus(
+      new Decimal(usage.input_image ?? 0)
+        .mul(pricing.input_image ?? 0)
+        .dividedBy(1000000),
+    );
+    cost = cost.plus(
       new Decimal(usage.input_audio ?? 0)
         .mul(pricing.input_audio ?? 0)
         .dividedBy(1000000),
