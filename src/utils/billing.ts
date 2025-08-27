@@ -4,6 +4,7 @@
 import { Decimal } from "decimal.js";
 import { and, eq, sql } from "drizzle-orm";
 import type { Context } from "hono";
+import jsonLogic from "json-logic-js";
 
 import {
   getConfig,
@@ -27,34 +28,50 @@ export const calculateCost = (
   usage?: LMRouterApiCallUsage,
   pricing?: LMRouterConfigModelProviderPricing,
 ): Decimal => {
-  let cost = new Decimal(0);
   if (!usage || !pricing) {
-    return cost;
+    return new Decimal(0);
   }
 
-  cost = cost.plus(
-    new Decimal(usage.input ?? 0).mul(pricing.input ?? 0).dividedBy(1000000),
-  );
-  cost = cost.plus(
-    new Decimal(usage.output ?? 0).mul(pricing.output ?? 0).dividedBy(1000000),
-  );
-  cost = cost.plus(new Decimal(usage.image ?? 0).mul(pricing.image ?? 0));
-  cost = cost.plus(
-    new Decimal(usage.web_search ?? 0).mul(pricing.web_search ?? 0),
-  );
-  cost = cost.plus(new Decimal(usage.request ?? 0).mul(pricing.request ?? 0));
-  cost = cost.plus(
-    new Decimal(usage.input_cache_reads ?? 0)
-      .mul(pricing.input_cache_reads ?? 0)
-      .dividedBy(1000000),
-  );
-  cost = cost.plus(
-    new Decimal(usage.input_cache_writes ?? 0)
-      .mul(pricing.input_cache_writes ?? 0)
-      .dividedBy(1000000),
-  );
+  if (pricing.type === "fixed") {
+    let cost = new Decimal(0);
+    cost = cost.plus(
+      new Decimal(usage.input ?? 0).mul(pricing.input ?? 0).dividedBy(1000000),
+    );
+    cost = cost.plus(
+      new Decimal(usage.output ?? 0)
+        .mul(pricing.output ?? 0)
+        .dividedBy(1000000),
+    );
+    cost = cost.plus(new Decimal(usage.image ?? 0).mul(pricing.image ?? 0));
+    cost = cost.plus(
+      new Decimal(usage.web_search ?? 0).mul(pricing.web_search ?? 0),
+    );
+    cost = cost.plus(new Decimal(usage.request ?? 0).mul(pricing.request ?? 0));
+    cost = cost.plus(
+      new Decimal(usage.input_cache_reads ?? 0)
+        .mul(pricing.input_cache_reads ?? 0)
+        .dividedBy(1000000),
+    );
+    cost = cost.plus(
+      new Decimal(usage.input_cache_writes ?? 0)
+        .mul(pricing.input_cache_writes ?? 0)
+        .dividedBy(1000000),
+    );
+    return cost.neg();
+  } else if (pricing.type === "tiered") {
+    for (const tier of pricing.tiers) {
+      if (!tier.predicate) {
+        return calculateCost(usage, tier.pricing);
+      }
 
-  return cost.neg();
+      const predicate = jsonLogic.apply(tier.predicate, usage);
+      if (predicate) {
+        return calculateCost(usage, tier.pricing);
+      }
+    }
+  }
+
+  throw new Error("Unknown pricing type");
 };
 
 export const updateBilling = async (

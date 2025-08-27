@@ -4,6 +4,7 @@
 import fs from "fs";
 
 import type { Context } from "hono";
+import type { RulesLogic } from "json-logic-js";
 import yaml from "yaml";
 
 import type { ContextEnv } from "../types/hono.js";
@@ -47,7 +48,8 @@ export interface LMRouterConfigProvider {
   api_key: string;
 }
 
-export interface LMRouterConfigModelProviderPricing {
+export interface LMRouterConfigModelProviderPricingFixed {
+  type: "fixed";
   input?: number;
   output?: number;
   image?: number;
@@ -56,6 +58,18 @@ export interface LMRouterConfigModelProviderPricing {
   input_cache_reads?: number;
   input_cache_writes?: number;
 }
+
+export interface LMRouterConfigModelProviderPricingTiered {
+  type: "tiered";
+  tiers: {
+    predicate?: RulesLogic;
+    pricing: LMRouterConfigModelProviderPricing;
+  }[];
+}
+
+export type LMRouterConfigModelProviderPricing =
+  | LMRouterConfigModelProviderPricingFixed
+  | LMRouterConfigModelProviderPricingTiered;
 
 export interface LMRouterConfigModelProvider {
   provider: string;
