@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
-import { betterAuth } from "better-auth";
+import { betterAuth, type BetterAuthPlugin } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { stripe } from "@better-auth/stripe";
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
+import { handleStripeWebhook } from "./billing.js";
 import { getConfig } from "./config.js";
 import { getDb } from "./database.js";
 import { balance } from "../models/billing.js";
+import { getStripe } from "./stripe.js";
 import type { ContextEnv } from "../types/hono.js";
 
 let authCache: ReturnType<typeof betterAuth> | null = null;
@@ -23,6 +26,7 @@ export const getAuth = (
         message: "Auth is not enabled",
       });
     }
+    const stripeClient = getStripe(c);
     authCache = betterAuth({
       baseURL: cfg.auth.better_auth.url,
       basePath: "/v1/auth",
@@ -49,6 +53,15 @@ export const getAuth = (
           },
         },
       },
+      plugins: [
+        // TODO: Remove type cast when better-auth fixes the type
+        stripe({
+          stripeClient: stripeClient.stripe,
+          stripeWebhookSecret: stripeClient.billingConfig.stripe.webhook_secret,
+          createCustomerOnSignUp: true,
+          onEvent: handleStripeWebhook,
+        }) as BetterAuthPlugin,
+      ],
     });
   }
   return authCache;

@@ -12,6 +12,8 @@ export interface AuthBetterAuth {
   type: "better-auth";
   user: User;
   session: Session;
+  ownerType: string;
+  ownerId: string;
 }
 
 export interface AuthApiKey {
@@ -32,6 +34,7 @@ export interface AuthByok {
 export type ContextEnv = {
   Variables: {
     auth?: AuthBetterAuth | AuthApiKey | AuthAccessKey | AuthByok;
+    modelName?: string;
     model?: LMRouterConfigModel;
   };
   Bindings: {

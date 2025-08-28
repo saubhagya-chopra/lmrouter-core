@@ -6,6 +6,7 @@ import { and, eq, sql } from "drizzle-orm";
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import jsonLogic from "json-logic-js";
+import { Stripe } from "stripe";
 
 import {
   getConfig,
@@ -14,6 +15,7 @@ import {
 import { getDb } from "./database.js";
 import { balance, ledger, type LedgerMetadata } from "../models/billing.js";
 import type { ContextEnv } from "../types/hono.js";
+import { getRemoteIp } from "./utils.js";
 
 export interface LMRouterApiCallUsage {
   service_tier?: string;
@@ -79,7 +81,7 @@ export const calculateCost = (
         .mul(pricing.input_cache_writes ?? 0)
         .dividedBy(1000000),
     );
-    return cost.neg();
+    return cost;
   } else if (pricing.type === "tiered") {
     for (const tier of pricing.tiers) {
       if (!tier.predicate) {
@@ -98,32 +100,81 @@ export const calculateCost = (
   });
 };
 
-export const updateBilling = async (
+export const recordApiCall = async (
   c: Context<ContextEnv>,
-  amount: Decimal,
-  metadata: LedgerMetadata,
+  usage?: LMRouterApiCallUsage,
+  pricing?: LMRouterConfigModelProviderPricing,
 ) => {
   if (!getConfig(c).auth.enabled || !c.var.auth) {
     return;
   }
 
-  if (c.var.auth.type === "access-key" || c.var.auth.type === "byok") {
-    await getDb(c).insert(ledger).values({
-      ownerType: c.var.auth.type,
-      ownerId: "",
-      amount: amount.toString(),
-      metadata,
-    });
+  const metadata: LedgerMetadata = {
+    type: "api-call",
+    data: {
+      api_key_id:
+        c.var.auth.type === "api-key" ? c.var.auth.apiKey.id : undefined,
+      model: c.var.modelName ?? "",
+      endpoint: c.req.path,
+      ip: getRemoteIp(c),
+      usage,
+      pricing,
+    },
+  };
+
+  const ownerType =
+    c.var.auth.type === "better-auth"
+      ? c.var.auth.ownerType
+      : c.var.auth.type === "api-key"
+        ? c.var.auth.apiKey.ownerType
+        : c.var.auth.type;
+  const ownerId =
+    c.var.auth.type === "better-auth"
+      ? c.var.auth.ownerId
+      : c.var.auth.type === "api-key"
+        ? c.var.auth.apiKey.ownerId
+        : "";
+
+  await updateBilling(
+    ownerType,
+    ownerId,
+    calculateCost(usage, pricing).neg(),
+    metadata,
+    c,
+  );
+};
+
+export const handleStripeWebhook = async (event: Stripe.Event) => {
+  if (event.type !== "checkout.session.completed") {
     return;
   }
 
-  const ownerType =
-    c.var.auth.type === "api-key" ? c.var.auth.apiKey.ownerType : "user";
-  const ownerId =
-    c.var.auth.type === "api-key"
-      ? c.var.auth.apiKey.ownerId
-      : c.var.auth.user.id;
+  const data = event.data.object;
+  if (!data.metadata) {
+    return;
+  }
 
+  const { owner_type, owner_id, amount } = data.metadata;
+  if (!owner_type || !owner_id || !amount) {
+    return;
+  }
+
+  await updateBilling(owner_type, owner_id, new Decimal(amount), {
+    type: "payment",
+    data: {
+      provider: "stripe",
+      session: data,
+    },
+  });
+};
+
+export const updateBilling = async (
+  ownerType: string,
+  ownerId: string,
+  amount: Decimal,
+  metadata: LedgerMetadata,
+  c?: Context<ContextEnv>,
+) => {
   await getDb(c).insert(ledger).values({
     ownerType,
     ownerId,
