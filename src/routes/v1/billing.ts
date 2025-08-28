@@ -4,7 +4,7 @@
 import { Hono } from "hono";
 
 import { requireAuth } from "../../middlewares/auth.js";
-import type { AuthBetterAuth, ContextEnv } from "../../types/hono.js";
+import type { ContextEnv } from "../../types/hono.js";
 import { getStripe } from "../../utils/stripe.js";
 
 const billingRouter = new Hono<ContextEnv>();
@@ -17,7 +17,6 @@ billingRouter.post("/checkout", async (c) => {
     return c.json({ error: "Bad request" }, 400);
   }
 
-  const auth = c.var.auth as AuthBetterAuth;
   const session = await getStripe(c).createCheckoutSession(
     c,
     amount,

@@ -4,7 +4,6 @@
 import type { Context } from "hono";
 import { getRuntimeKey } from "hono/adapter";
 import { getConnInfo as getConnInfoWorker } from "hono/cloudflare-workers";
-import { HTTPException } from "hono/http-exception";
 import { getConnInfo as getConnInfoNode } from "@hono/node-server/conninfo";
 
 import {
