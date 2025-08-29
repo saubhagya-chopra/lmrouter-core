@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
+import { HTTPException } from "hono/http-exception";
+
 import type { LedgerMetadataApiCallTimestamps } from "../models/billing.js";
 
 export class TimeKeeper {
@@ -24,7 +26,9 @@ export class TimeKeeper {
 
   timestamps(): LedgerMetadataApiCallTimestamps {
     if (!this.first || !this.second) {
-      throw new Error("Timestamps not recorded");
+      throw new HTTPException(500, {
+        message: "Internal server error",
+      });
     }
 
     if (!this.last) {
