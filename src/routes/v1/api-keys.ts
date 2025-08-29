@@ -43,7 +43,7 @@ apiKeysRouter.get("/", async (c) => {
 apiKeysRouter.post("/", async (c) => {
   const { name } = await c.req.json();
   if (typeof name !== "string") {
-    return c.json({ error: "Name is required" }, 400);
+    return c.json({ error: { message: "Name is required" } }, 400);
   }
 
   const auth = c.var.auth as AuthBetterAuth;
