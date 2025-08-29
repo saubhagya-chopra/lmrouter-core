@@ -13,7 +13,12 @@ import {
   type LMRouterConfigModelProviderPricing,
 } from "./config.js";
 import { getDb } from "./database.js";
-import { balance, ledger, type LedgerMetadata } from "../models/billing.js";
+import {
+  balance,
+  ledger,
+  type LedgerMetadata,
+  type LedgerMetadataApiCallTimestamps,
+} from "../models/billing.js";
 import type { ContextEnv } from "../types/hono.js";
 import { getRemoteIp } from "./utils.js";
 
@@ -102,6 +107,9 @@ export const calculateCost = (
 
 export const recordApiCall = async (
   c: Context<ContextEnv>,
+  provider: string,
+  status: number,
+  timestamps?: LedgerMetadataApiCallTimestamps,
   usage?: LMRouterApiCallUsage,
   pricing?: LMRouterConfigModelProviderPricing,
 ) => {
@@ -115,8 +123,15 @@ export const recordApiCall = async (
       api_key_id:
         c.var.auth.type === "api-key" ? c.var.auth.apiKey.id : undefined,
       model: c.var.modelName ?? "",
+      provider,
       endpoint: c.req.path,
+      status,
+      timestamps,
       ip: getRemoteIp(c),
+      referer: {
+        name: c.req.header("X-Title"),
+        url: c.req.header("HTTP-Referer"),
+      },
       usage,
       pricing,
     },

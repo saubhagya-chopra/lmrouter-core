@@ -11,6 +11,7 @@ import { ensureBalance } from "../../../../middlewares/billing.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
 import { recordApiCall } from "../../../../utils/billing.js";
+import { TimeKeeper } from "../../../../utils/chrono.js";
 import { iterateModelProviders } from "../../../../utils/utils.js";
 
 const chatRouter = new Hono<ContextEnv>();
@@ -29,11 +30,21 @@ chatRouter.post("/completions", async (c) => {
     }
 
     const adapter = OpenAIChatCompletionAdapterFactory.getAdapter(provider);
+    const timeKeeper = new TimeKeeper();
+    timeKeeper.record();
     if (reqBody.stream !== true) {
       const completion = await adapter.sendRequest(provider, reqBody, {
         maxTokens: providerCfg.max_tokens,
       });
-      await recordApiCall(c, adapter.usage, providerCfg.pricing);
+      timeKeeper.record();
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        200,
+        timeKeeper.timestamps(),
+        adapter.usage,
+        providerCfg.pricing,
+      );
       return c.json(completion);
     }
 
@@ -42,6 +53,7 @@ chatRouter.post("/completions", async (c) => {
     });
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {
+        timeKeeper.record();
         await stream.writeSSE({
           data: JSON.stringify(chunk),
         });
@@ -49,7 +61,14 @@ chatRouter.post("/completions", async (c) => {
       await stream.writeSSE({
         data: "[DONE]",
       });
-      await recordApiCall(c, adapter.usage, providerCfg.pricing);
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        200,
+        timeKeeper.timestamps(),
+        adapter.usage,
+        providerCfg.pricing,
+      );
     });
   });
 });

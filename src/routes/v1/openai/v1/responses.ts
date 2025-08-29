@@ -11,6 +11,7 @@ import { ensureBalance } from "../../../../middlewares/billing.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
 import { recordApiCall } from "../../../../utils/billing.js";
+import { TimeKeeper } from "../../../../utils/chrono.js";
 import { ResponsesStoreFactory } from "../../../../utils/responses-store.js";
 import { iterateModelProviders } from "../../../../utils/utils.js";
 
@@ -25,14 +26,24 @@ responsesRouter.post("/", async (c) => {
     reqBody.model = providerCfg.model;
 
     const adapter = OpenAIResponsesAdapterFactory.getAdapter(provider);
+    const timeKeeper = new TimeKeeper();
+    timeKeeper.record();
     if (reqBody.stream !== true) {
       const response = await adapter.sendRequest(provider, reqBody, {
         maxTokens: providerCfg.max_tokens,
       });
+      timeKeeper.record();
       if (reqBody.store !== false) {
         await ResponsesStoreFactory.getStore().set(reqBody, response);
       }
-      await recordApiCall(c, adapter.usage, providerCfg.pricing);
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        200,
+        timeKeeper.timestamps(),
+        adapter.usage,
+        providerCfg.pricing,
+      );
       return c.json(response);
     }
 
@@ -41,6 +52,7 @@ responsesRouter.post("/", async (c) => {
     });
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {
+        timeKeeper.record();
         await stream.writeSSE({
           event: chunk.type,
           data: JSON.stringify(chunk),
@@ -49,7 +61,14 @@ responsesRouter.post("/", async (c) => {
       if (reqBody.store !== false && adapter.response) {
         await ResponsesStoreFactory.getStore().set(reqBody, adapter.response);
       }
-      await recordApiCall(c, adapter.usage, providerCfg.pricing);
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        200,
+        timeKeeper.timestamps(),
+        adapter.usage,
+        providerCfg.pricing,
+      );
     });
   });
 });

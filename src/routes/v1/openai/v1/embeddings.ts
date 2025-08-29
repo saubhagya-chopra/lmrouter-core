@@ -10,6 +10,7 @@ import { ensureBalance } from "../../../../middlewares/billing.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
 import { recordApiCall } from "../../../../utils/billing.js";
+import { TimeKeeper } from "../../../../utils/chrono.js";
 import { iterateModelProviders } from "../../../../utils/utils.js";
 
 const embeddingsRouter = new Hono<ContextEnv>();
@@ -23,8 +24,18 @@ embeddingsRouter.post("/", async (c) => {
     reqBody.model = providerCfg.model;
 
     const adapter = OpenAIEmbeddingsAdapterFactory.getAdapter(provider);
+    const timeKeeper = new TimeKeeper();
+    timeKeeper.record();
     const embeddings = await adapter.sendRequest(provider, reqBody);
-    await recordApiCall(c, adapter.usage, providerCfg.pricing);
+    timeKeeper.record();
+    await recordApiCall(
+      c,
+      providerCfg.provider,
+      200,
+      timeKeeper.timestamps(),
+      adapter.usage,
+      providerCfg.pricing,
+    );
     return c.json(embeddings);
   });
 });

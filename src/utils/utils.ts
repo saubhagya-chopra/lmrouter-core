@@ -6,6 +6,8 @@ import { getRuntimeKey } from "hono/adapter";
 import { getConnInfo as getConnInfoWorker } from "hono/cloudflare-workers";
 import { getConnInfo as getConnInfoNode } from "@hono/node-server/conninfo";
 
+import { recordApiCall } from "./billing.js";
+import { TimeKeeper } from "./chrono.js";
 import {
   getConfig,
   type LMRouterConfigModel,
@@ -108,9 +110,20 @@ export const iterateModelProviders = async (
     hydratedProvider.api_key =
       c.var.auth?.type === "byok" ? c.var.auth.byok : provider.api_key;
 
+    const timeKeeper = new TimeKeeper();
     try {
+      timeKeeper.record();
       return await cb(providerCfg, hydratedProvider);
     } catch (e) {
+      timeKeeper.record();
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        (e as any).status ?? 500,
+        timeKeeper.timestamps(),
+        undefined,
+        providerCfg.pricing,
+      );
       error = e;
       if (cfg.server.logging === "dev") {
         console.error(e);

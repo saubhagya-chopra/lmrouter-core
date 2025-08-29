@@ -11,6 +11,7 @@ import { ensureBalance } from "../../../../middlewares/billing.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
 import { recordApiCall } from "../../../../utils/billing.js";
+import { TimeKeeper } from "../../../../utils/chrono.js";
 import { iterateModelProviders } from "../../../../utils/utils.js";
 
 const messagesRouter = new Hono<ContextEnv>();
@@ -24,11 +25,21 @@ messagesRouter.post("/", async (c) => {
     reqBody.model = providerCfg.model;
 
     const adapter = AnthropicMessagesAdapterFactory.getAdapter(provider);
+    const timeKeeper = new TimeKeeper();
+    timeKeeper.record();
     if (reqBody.stream !== true) {
       const completion = await adapter.sendRequest(provider, reqBody, {
         maxTokens: providerCfg.max_tokens,
       });
-      await recordApiCall(c, adapter.usage, providerCfg.pricing);
+      timeKeeper.record();
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        200,
+        timeKeeper.timestamps(),
+        adapter.usage,
+        providerCfg.pricing,
+      );
       return c.json(completion);
     }
 
@@ -37,12 +48,20 @@ messagesRouter.post("/", async (c) => {
     });
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {
+        timeKeeper.record();
         await stream.writeSSE({
           event: chunk.type,
           data: JSON.stringify(chunk),
         });
       }
-      await recordApiCall(c, adapter.usage, providerCfg.pricing);
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        200,
+        timeKeeper.timestamps(),
+        adapter.usage,
+        providerCfg.pricing,
+      );
     });
   });
 });

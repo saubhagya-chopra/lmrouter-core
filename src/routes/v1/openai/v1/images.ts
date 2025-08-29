@@ -15,6 +15,7 @@ import { ensureBalance } from "../../../../middlewares/billing.js";
 import { parseModel } from "../../../../middlewares/model.js";
 import type { ContextEnv } from "../../../../types/hono.js";
 import { recordApiCall } from "../../../../utils/billing.js";
+import { TimeKeeper } from "../../../../utils/chrono.js";
 import { iterateModelProviders } from "../../../../utils/utils.js";
 
 const imagesRouter = new Hono<ContextEnv>();
@@ -28,20 +29,38 @@ imagesRouter.post("/generations", async (c) => {
     reqBody.model = providerCfg.model;
 
     const adapter = OpenAIImageGenerationAdapterFactory.getAdapter(provider);
+    const timeKeeper = new TimeKeeper();
+    timeKeeper.record();
     if (reqBody.stream !== true) {
       const image = await adapter.sendRequest(provider, reqBody);
-      await recordApiCall(c, adapter.usage, providerCfg.pricing);
+      timeKeeper.record();
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        200,
+        timeKeeper.timestamps(),
+        adapter.usage,
+        providerCfg.pricing,
+      );
       return c.json(image);
     }
 
     const s = adapter.sendRequestStreaming(provider, reqBody);
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {
+        timeKeeper.record();
         await stream.writeSSE({
           event: chunk.type,
           data: JSON.stringify(chunk),
         });
-        await recordApiCall(c, adapter.usage, providerCfg.pricing);
+        await recordApiCall(
+          c,
+          providerCfg.provider,
+          200,
+          timeKeeper.timestamps(),
+          adapter.usage,
+          providerCfg.pricing,
+        );
       }
     });
   });
@@ -66,20 +85,38 @@ imagesRouter.post("/edits", async (c) => {
     reqBody.model = providerCfg.model;
 
     const adapter = OpenAIImageEditAdapterFactory.getAdapter(provider);
+    const timeKeeper = new TimeKeeper();
+    timeKeeper.record();
     if (reqBody.stream !== true) {
       const image = await adapter.sendRequest(provider, reqBody);
-      await recordApiCall(c, adapter.usage, providerCfg.pricing);
+      timeKeeper.record();
+      await recordApiCall(
+        c,
+        providerCfg.provider,
+        200,
+        timeKeeper.timestamps(),
+        adapter.usage,
+        providerCfg.pricing,
+      );
       return c.json(image);
     }
 
     const s = adapter.sendRequestStreaming(provider, reqBody);
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {
+        timeKeeper.record();
         await stream.writeSSE({
           event: chunk.type,
           data: JSON.stringify(chunk),
         });
-        await recordApiCall(c, adapter.usage, providerCfg.pricing);
+        await recordApiCall(
+          c,
+          providerCfg.provider,
+          200,
+          timeKeeper.timestamps(),
+          adapter.usage,
+          providerCfg.pricing,
+        );
       }
     });
   });

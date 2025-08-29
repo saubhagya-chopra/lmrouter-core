@@ -7,13 +7,26 @@ import { jsonb, numeric, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import type { LMRouterApiCallUsage } from "../utils/billing.js";
 import type { LMRouterConfigModelProviderPricing } from "../utils/config.js";
 
+export interface LedgerMetadataApiCallTimestamps {
+  start: number;
+  first_token?: number;
+  end: number;
+}
+
 export interface LedgerMetadataApiCall {
   type: "api-call";
   data: {
     api_key_id?: string;
     model: string;
+    provider: string;
     endpoint: string;
+    status: number;
+    timestamps?: LedgerMetadataApiCallTimestamps;
     ip?: string;
+    referer: {
+      name?: string;
+      url?: string;
+    };
     usage?: LMRouterApiCallUsage;
     pricing?: LMRouterConfigModelProviderPricing;
   };
