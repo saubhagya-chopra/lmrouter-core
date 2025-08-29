@@ -45,7 +45,7 @@ imagesRouter.post("/generations", async (c) => {
       return c.json(image);
     }
 
-    const s = adapter.sendRequestStreaming(provider, reqBody);
+    const s = await adapter.sendRequestStreaming(provider, reqBody);
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {
         timeKeeper.record();
@@ -101,7 +101,7 @@ imagesRouter.post("/edits", async (c) => {
       return c.json(image);
     }
 
-    const s = adapter.sendRequestStreaming(provider, reqBody);
+    const s = await adapter.sendRequestStreaming(provider, reqBody);
     return streamSSE(c, async (stream) => {
       for await (const chunk of s) {
         timeKeeper.record();

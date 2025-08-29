@@ -44,11 +44,11 @@ export class OpenAIImageGenerationGoogleAdapter
     return this.sendRequestGemini(provider, request);
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
     options?: {},
-  ): AsyncGenerator<ImageGenStreamEvent> {
+  ): Promise<AsyncGenerator<ImageGenStreamEvent>> {
     throw new HTTPException(400, {
       message: "Google does not support streaming",
     });

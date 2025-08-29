@@ -22,5 +22,5 @@ export abstract class LMRouterAdapter<
     provider: LMRouterConfigProvider,
     request: TInput,
     options?: TInputOptions,
-  ): AsyncGenerator<TOutputStreamChunk>;
+  ): Promise<AsyncGenerator<TOutputStreamChunk>>;
 }

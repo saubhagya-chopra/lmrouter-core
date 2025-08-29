@@ -101,11 +101,11 @@ export class OpenAIImageEditFireworksAdapter implements OpenAIImageEditAdapter {
     }
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ImageEditParamsBase,
     options?: {},
-  ): AsyncGenerator<ImageEditStreamEvent> {
+  ): Promise<AsyncGenerator<ImageEditStreamEvent>> {
     throw new HTTPException(400, {
       message: "Fireworks does not support streaming",
     });

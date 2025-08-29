@@ -52,28 +52,30 @@ export class OpenAIImageGenerationOpenAIAdapter
     return image as ImagesResponse;
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ImageGenerateParamsBase,
     options?: {},
-  ): AsyncGenerator<ImageGenStreamEvent> {
+  ): Promise<AsyncGenerator<ImageGenStreamEvent>> {
     const openai = this.getClient(provider);
     const stream = await openai.images.generate(request);
-    for await (const chunk of stream as Stream<ImageGenStreamEvent>) {
-      if (chunk.type === "image_generation.completed") {
-        this.usage = {
-          input:
-            chunk.usage.input_tokens -
-            chunk.usage.input_tokens_details.image_tokens,
-          input_image: chunk.usage.input_tokens_details.image_tokens,
-          output: chunk.usage.output_tokens,
-          image: 1,
-          image_quality: chunk.quality,
-          image_size: chunk.size,
-          request: 1,
-        };
-        yield chunk;
+    return async function* (this: OpenAIImageGenerationOpenAIAdapter) {
+      for await (const chunk of stream as Stream<ImageGenStreamEvent>) {
+        if (chunk.type === "image_generation.completed") {
+          this.usage = {
+            input:
+              chunk.usage.input_tokens -
+              chunk.usage.input_tokens_details.image_tokens,
+            input_image: chunk.usage.input_tokens_details.image_tokens,
+            output: chunk.usage.output_tokens,
+            image: 1,
+            image_quality: chunk.quality,
+            image_size: chunk.size,
+            request: 1,
+          };
+          yield chunk;
+        }
       }
-    }
+    }.bind(this)();
   }
 }

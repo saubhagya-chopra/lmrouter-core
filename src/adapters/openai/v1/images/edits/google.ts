@@ -48,11 +48,11 @@ export class OpenAIImageEditGoogleAdapter implements OpenAIImageEditAdapter {
     return this.convertResponse(image);
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ImageEditParamsBase,
     options?: {},
-  ): AsyncGenerator<ImageEditStreamEvent> {
+  ): Promise<AsyncGenerator<ImageEditStreamEvent>> {
     throw new HTTPException(400, {
       message: "Google does not support streaming",
     });

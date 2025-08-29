@@ -50,25 +50,27 @@ export class AnthropicMessagesAnthropicAdapter
     return message as Message;
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: MessageCreateParamsBase,
     options?: AnthropicMessagesInputOptions,
-  ): AsyncGenerator<RawMessageStreamEvent> {
+  ): Promise<AsyncGenerator<RawMessageStreamEvent>> {
     const anthropic = this.getClient(provider);
     const stream = await anthropic.messages.create(request);
-    for await (const chunk of stream as Stream<RawMessageStreamEvent>) {
-      if (chunk.type === "message_delta") {
-        this.usage = {
-          input: chunk.usage.input_tokens ?? 0,
-          output: chunk.usage.output_tokens ?? 0,
-          web_search: chunk.usage.server_tool_use?.web_search_requests ?? 0,
-          request: 1,
-          input_cache_reads: chunk.usage.cache_read_input_tokens ?? 0,
-          input_cache_writes: chunk.usage.cache_creation_input_tokens ?? 0,
-        };
+    return async function* (this: AnthropicMessagesAnthropicAdapter) {
+      for await (const chunk of stream as Stream<RawMessageStreamEvent>) {
+        if (chunk.type === "message_delta") {
+          this.usage = {
+            input: chunk.usage.input_tokens ?? 0,
+            output: chunk.usage.output_tokens ?? 0,
+            web_search: chunk.usage.server_tool_use?.web_search_requests ?? 0,
+            request: 1,
+            input_cache_reads: chunk.usage.cache_read_input_tokens ?? 0,
+            input_cache_writes: chunk.usage.cache_creation_input_tokens ?? 0,
+          };
+        }
+        yield chunk;
       }
-      yield chunk;
-    }
+    }.bind(this)();
   }
 }

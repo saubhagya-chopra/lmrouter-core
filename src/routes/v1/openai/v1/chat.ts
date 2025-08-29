@@ -48,7 +48,7 @@ chatRouter.post("/completions", async (c) => {
       return c.json(completion);
     }
 
-    const s = adapter.sendRequestStreaming(provider, reqBody, {
+    const s = await adapter.sendRequestStreaming(provider, reqBody, {
       maxTokens: providerCfg.max_tokens,
     });
     return streamSSE(c, async (stream) => {

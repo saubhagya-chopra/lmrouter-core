@@ -59,29 +59,31 @@ export class OpenAIChatCompletionOpenAIAdapter
     return completion as ChatCompletion;
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ChatCompletionCreateParamsBase,
     options?: OpenAIChatCompletionInputOptions,
-  ): AsyncGenerator<ChatCompletionChunk> {
+  ): Promise<AsyncGenerator<ChatCompletionChunk>> {
     const openai = this.getClient(provider);
     const stream = await openai.chat.completions.create(request);
-    for await (const chunk of stream as Stream<ChatCompletionChunk>) {
-      if (chunk.usage) {
-        this.usage = {
-          service_tier: chunk.service_tier ?? undefined,
-          input:
-            chunk.usage.prompt_tokens -
-            (chunk.usage.prompt_tokens_details?.cached_tokens ?? 0) -
-            (chunk.usage.prompt_tokens_details?.audio_tokens ?? 0),
-          input_audio: chunk.usage.prompt_tokens_details?.audio_tokens ?? 0,
-          output: chunk.usage.completion_tokens,
-          request: 1,
-          input_cache_reads:
-            chunk.usage.prompt_tokens_details?.cached_tokens ?? 0,
-        };
+    return async function* (this: OpenAIChatCompletionOpenAIAdapter) {
+      for await (const chunk of stream as Stream<ChatCompletionChunk>) {
+        if (chunk.usage) {
+          this.usage = {
+            service_tier: chunk.service_tier ?? undefined,
+            input:
+              chunk.usage.prompt_tokens -
+              (chunk.usage.prompt_tokens_details?.cached_tokens ?? 0) -
+              (chunk.usage.prompt_tokens_details?.audio_tokens ?? 0),
+            input_audio: chunk.usage.prompt_tokens_details?.audio_tokens ?? 0,
+            output: chunk.usage.completion_tokens,
+            request: 1,
+            input_cache_reads:
+              chunk.usage.prompt_tokens_details?.cached_tokens ?? 0,
+          };
+        }
+        yield chunk;
       }
-      yield chunk;
-    }
+    }.bind(this)();
   }
 }

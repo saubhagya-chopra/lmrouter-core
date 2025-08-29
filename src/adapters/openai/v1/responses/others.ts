@@ -57,13 +57,13 @@ export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
     return this.convertResponse(response, request);
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ResponseCreateParamsBase,
     options?: OpenAIResponsesInputOptions,
-  ): AsyncGenerator<ResponseStreamEvent> {
+  ): Promise<AsyncGenerator<ResponseStreamEvent>> {
     const adapter = this.getAdapter(provider);
-    const stream = adapter.sendRequestStreaming(
+    const stream = await adapter.sendRequestStreaming(
       provider,
       this.convertRequest(
         await ResponsesStoreFactory.getStore().hydrateRequest(request),
@@ -72,13 +72,15 @@ export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
         maxTokens: options?.maxTokens,
       },
     );
-    for await (const chunk of this.convertStream(stream, request)) {
-      if (chunk.type === "response.completed") {
-        this.response = chunk.response;
+    return async function* (this: OpenAIResponsesOthersAdapter) {
+      for await (const chunk of this.convertStream(stream, request)) {
+        if (chunk.type === "response.completed") {
+          this.response = chunk.response;
+        }
+        yield chunk;
       }
-      yield chunk;
-    }
-    this.usage = adapter.usage;
+      this.usage = adapter.usage;
+    }.bind(this)();
   }
 
   convertRequest(

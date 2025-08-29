@@ -50,28 +50,30 @@ export class OpenAIImageEditOpenAIAdapter implements OpenAIImageEditAdapter {
     return image as ImagesResponse;
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ImageEditParamsBase,
     options?: {},
-  ): AsyncGenerator<ImageEditStreamEvent> {
+  ): Promise<AsyncGenerator<ImageEditStreamEvent>> {
     const openai = this.getClient(provider);
     const stream = await openai.images.edit(request);
-    for await (const chunk of stream as Stream<ImageEditStreamEvent>) {
-      if (chunk.type === "image_edit.completed") {
-        this.usage = {
-          input:
-            chunk.usage.input_tokens -
-            chunk.usage.input_tokens_details.image_tokens,
-          input_image: chunk.usage.input_tokens_details.image_tokens,
-          output: chunk.usage.output_tokens,
-          image: 1,
-          image_quality: chunk.quality,
-          image_size: chunk.size,
-          request: 1,
-        };
-        yield chunk;
+    return async function* (this: OpenAIImageEditOpenAIAdapter) {
+      for await (const chunk of stream as Stream<ImageEditStreamEvent>) {
+        if (chunk.type === "image_edit.completed") {
+          this.usage = {
+            input:
+              chunk.usage.input_tokens -
+              chunk.usage.input_tokens_details.image_tokens,
+            input_image: chunk.usage.input_tokens_details.image_tokens,
+            output: chunk.usage.output_tokens,
+            image: 1,
+            image_quality: chunk.quality,
+            image_size: chunk.size,
+            request: 1,
+          };
+          yield chunk;
+        }
       }
-    }
+    }.bind(this)();
   }
 }

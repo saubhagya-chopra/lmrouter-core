@@ -52,18 +52,20 @@ export class AnthropicMessagesOthersAdapter
     return this.convertResponse(response);
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: MessageCreateParamsBase,
     options?: AnthropicMessagesInputOptions,
-  ): AsyncGenerator<RawMessageStreamEvent> {
+  ): Promise<AsyncGenerator<RawMessageStreamEvent>> {
     const adapter = this.getAdapter(provider);
-    const stream = adapter.sendRequestStreaming(
+    const stream = await adapter.sendRequestStreaming(
       provider,
       this.convertRequest(request, options?.maxTokens),
     );
-    yield* this.convertStream(stream);
-    this.usage = adapter.usage;
+    return async function* (this: AnthropicMessagesOthersAdapter) {
+      yield* this.convertStream(stream);
+      this.usage = adapter.usage;
+    }.bind(this)();
   }
 
   convertRequest(

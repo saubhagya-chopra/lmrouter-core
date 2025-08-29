@@ -36,11 +36,11 @@ export class OpenAIEmbeddingsOpenAIAdapter implements OpenAIEmbeddingsAdapter {
     return embeddings;
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: EmbeddingCreateParams,
     options?: {},
-  ): AsyncGenerator<never> {
+  ): Promise<AsyncGenerator<never>> {
     throw new HTTPException(400, {
       message: "Embeddings API does not support streaming",
     });

@@ -57,34 +57,36 @@ export class OpenAIResponsesOpenAIAdapter implements OpenAIResponsesAdapter {
     return response as Response;
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ResponseCreateParamsBase,
     options?: OpenAIResponsesInputOptions,
-  ): AsyncGenerator<ResponseStreamEvent> {
+  ): Promise<AsyncGenerator<ResponseStreamEvent>> {
     const openai = this.getClient(provider);
     const stream = await openai.responses.create(request);
-    for await (const chunk of stream as Stream<ResponseStreamEvent>) {
-      if (chunk.type === "response.completed") {
-        this.usage = {
-          service_tier: chunk.response.service_tier ?? undefined,
-          input:
-            (chunk.response.usage?.input_tokens ?? 0) -
-            (chunk.response.usage?.input_tokens_details.cached_tokens ?? 0),
-          output: chunk.response.usage?.output_tokens ?? 0,
-          web_search: chunk.response.output.filter(
-            (o) => o.type === "web_search_call",
-          ).length,
-          code_interpreter: chunk.response.output.filter(
-            (o) => o.type === "code_interpreter_call",
-          ).length,
-          request: 1,
-          input_cache_reads:
-            chunk.response.usage?.input_tokens_details.cached_tokens ?? 0,
-        };
-        this.response = chunk.response;
+    return async function* (this: OpenAIResponsesOpenAIAdapter) {
+      for await (const chunk of stream as Stream<ResponseStreamEvent>) {
+        if (chunk.type === "response.completed") {
+          this.usage = {
+            service_tier: chunk.response.service_tier ?? undefined,
+            input:
+              (chunk.response.usage?.input_tokens ?? 0) -
+              (chunk.response.usage?.input_tokens_details.cached_tokens ?? 0),
+            output: chunk.response.usage?.output_tokens ?? 0,
+            web_search: chunk.response.output.filter(
+              (o) => o.type === "web_search_call",
+            ).length,
+            code_interpreter: chunk.response.output.filter(
+              (o) => o.type === "code_interpreter_call",
+            ).length,
+            request: 1,
+            input_cache_reads:
+              chunk.response.usage?.input_tokens_details.cached_tokens ?? 0,
+          };
+          this.response = chunk.response;
+        }
+        yield chunk;
       }
-      yield chunk;
-    }
+    }.bind(this)();
   }
 }

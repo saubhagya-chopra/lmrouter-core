@@ -49,18 +49,20 @@ export class OpenAIChatCompletionAnthropicAdapter
     return this.convertResponse(completion as Message);
   }
 
-  async *sendRequestStreaming(
+  async sendRequestStreaming(
     provider: LMRouterConfigProvider,
     request: ChatCompletionCreateParamsBase,
     options?: OpenAIChatCompletionInputOptions,
-  ): AsyncGenerator<ChatCompletionChunk> {
+  ): Promise<AsyncGenerator<ChatCompletionChunk>> {
     const adaptor = this.getAdapter(provider);
-    const stream = adaptor.sendRequestStreaming(
+    const stream = await adaptor.sendRequestStreaming(
       provider,
       this.convertRequest(request, options?.maxTokens),
     );
-    yield* this.convertStream(stream);
-    this.usage = adaptor.usage;
+    return async function* (this: OpenAIChatCompletionAnthropicAdapter) {
+      yield* this.convertStream(stream);
+      this.usage = adaptor.usage;
+    }.bind(this)();
   }
 
   convertRequest(
