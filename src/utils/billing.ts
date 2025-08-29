@@ -109,9 +109,10 @@ export const recordApiCall = async (
   c: Context<ContextEnv>,
   provider: string,
   status: number,
-  timestamps?: LedgerMetadataApiCallTimestamps,
+  timestamps: LedgerMetadataApiCallTimestamps,
   usage?: LMRouterApiCallUsage,
   pricing?: LMRouterConfigModelProviderPricing,
+  error?: string,
 ) => {
   if (!getConfig(c).auth.enabled || !c.var.auth) {
     return;
@@ -126,6 +127,7 @@ export const recordApiCall = async (
       provider,
       endpoint: c.req.path,
       status,
+      error,
       timestamps,
       ip: getRemoteIp(c),
       referer: {

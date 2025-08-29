@@ -123,6 +123,9 @@ export const iterateModelProviders = async (
         timeKeeper.timestamps(),
         undefined,
         providerCfg.pricing,
+        (e as any).error?.error?.message ??
+          (e as any).error?.message ??
+          (e as any).message,
       );
       error = e;
       if (cfg.server.logging === "dev") {
@@ -134,9 +137,10 @@ export const iterateModelProviders = async (
   if (error) {
     return c.json(
       {
-        error: error.error ?? {
-          message: error.message,
-        },
+        error: error.error?.error ??
+          error.error ?? {
+            message: error.message,
+          },
       },
       error.status || 500,
     );
