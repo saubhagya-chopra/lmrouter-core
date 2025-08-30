@@ -125,6 +125,7 @@ export const recordApiCall = async (
   usage?: LMRouterApiCallUsage,
   pricing?: LMRouterConfigModelProviderPricing,
   error?: string,
+  stream?: boolean,
 ) => {
   if (!getConfig(c).auth.enabled || !c.var.auth) {
     return;
@@ -139,6 +140,7 @@ export const recordApiCall = async (
       provider,
       endpoint: c.req.path,
       status,
+      stream,
       error,
       timestamps,
       ip: getRemoteIp(c),

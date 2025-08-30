@@ -21,6 +21,7 @@ export interface LedgerMetadataApiCall {
     provider: string;
     endpoint: string;
     status: number;
+    stream?: boolean;
     error?: string;
     timestamps: LedgerMetadataApiCallTimestamps;
     ip?: string;

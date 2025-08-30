@@ -56,6 +56,8 @@ audioRouter.post("/transcriptions", async (c) => {
         timeKeeper.timestamps(),
         adapter.usage,
         providerCfg.pricing,
+        undefined,
+        false,
       );
       if (typeof transcription === "string") {
         return c.text(transcription);
@@ -81,6 +83,8 @@ audioRouter.post("/transcriptions", async (c) => {
         timeKeeper.timestamps(),
         adapter.usage,
         providerCfg.pricing,
+        undefined,
+        true,
       );
     });
   });
@@ -109,6 +113,8 @@ audioRouter.post("/translations", async (c) => {
       timeKeeper.timestamps(),
       adapter.usage,
       providerCfg.pricing,
+      undefined,
+      false,
     );
     if (typeof translation === "string") {
       return c.text(translation);
