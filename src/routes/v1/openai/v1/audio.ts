@@ -4,8 +4,10 @@
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import type { TranscriptionCreateParamsBase } from "openai/resources/audio/transcriptions";
+import type { TranslationCreateParams } from "openai/resources/audio/translations";
 
 import { OpenAITranscriptionsAdapterFactory } from "../../../../adapters/openai/v1/audio/transcriptions/adapter.js";
+import { OpenAITranslationsAdapterFactory } from "../../../../adapters/openai/v1/audio/translations/adapter.js";
 import { requireAuth } from "../../../../middlewares/auth.js";
 import { ensureBalance } from "../../../../middlewares/billing.js";
 import { parseModel } from "../../../../middlewares/model.js";
@@ -81,6 +83,37 @@ audioRouter.post("/transcriptions", async (c) => {
         providerCfg.pricing,
       );
     });
+  });
+});
+
+audioRouter.post("/translations", async (c) => {
+  const formData = await c.req.formData();
+  const body: Record<string, any> = {};
+  for (const [key, value] of formData.entries()) {
+    body[key] = value;
+  }
+
+  return await iterateModelProviders(c, async (providerCfg, provider) => {
+    const reqBody = { ...body } as TranslationCreateParams;
+    reqBody.model = providerCfg.model;
+
+    const adapter = OpenAITranslationsAdapterFactory.getAdapter(provider);
+    const timeKeeper = new TimeKeeper();
+    timeKeeper.record();
+    const translation = await adapter.sendRequest(provider, reqBody);
+    timeKeeper.record();
+    await recordApiCall(
+      c,
+      providerCfg.provider,
+      200,
+      timeKeeper.timestamps(),
+      adapter.usage,
+      providerCfg.pricing,
+    );
+    if (typeof translation === "string") {
+      return c.text(translation);
+    }
+    return c.json(translation);
   });
 });
 
