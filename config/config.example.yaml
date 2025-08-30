@@ -40,6 +40,10 @@ models:
     providers:
       - provider: openai
         model: gpt-image-1
+  openai/tts-1:
+    providers:
+      - provider: openai
+        model: tts-1
   openai/gpt-4o-transcribe:
     providers:
       - provider: openai

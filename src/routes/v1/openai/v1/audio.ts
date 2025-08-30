@@ -3,9 +3,11 @@
 
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
+import type { SpeechCreateParams } from "openai/resources/audio/speech";
 import type { TranscriptionCreateParamsBase } from "openai/resources/audio/transcriptions";
 import type { TranslationCreateParams } from "openai/resources/audio/translations";
 
+import { OpenAISpeechAdapterFactory } from "../../../../adapters/openai/v1/audio/speech/adapter.js";
 import { OpenAITranscriptionsAdapterFactory } from "../../../../adapters/openai/v1/audio/transcriptions/adapter.js";
 import { OpenAITranslationsAdapterFactory } from "../../../../adapters/openai/v1/audio/translations/adapter.js";
 import { requireAuth } from "../../../../middlewares/auth.js";
@@ -120,6 +122,57 @@ audioRouter.post("/translations", async (c) => {
       return c.text(translation);
     }
     return c.json(translation);
+  });
+});
+
+audioRouter.post("/speech", async (c) => {
+  const body = await c.req.json();
+
+  if (body.stream_format === "sse") {
+    return c.json(
+      {
+        error: {
+          message: "SSE is not supported for speech API",
+        },
+      },
+      400,
+    );
+  }
+
+  return await iterateModelProviders(c, async (providerCfg, provider) => {
+    const reqBody = { ...body } as SpeechCreateParams;
+    reqBody.model = providerCfg.model;
+
+    // TODO: Add support for GPT models
+    if (reqBody.model.startsWith("gpt")) {
+      return c.json(
+        {
+          error: {
+            message: "GPT models are not supported for speech API",
+          },
+        },
+        400,
+      );
+    }
+
+    const adapter = OpenAISpeechAdapterFactory.getAdapter(provider);
+    const timeKeeper = new TimeKeeper();
+    timeKeeper.record();
+    const speech = await adapter.sendRequest(provider, reqBody);
+    timeKeeper.record();
+    await recordApiCall(
+      c,
+      providerCfg.provider,
+      200,
+      timeKeeper.timestamps(),
+      adapter.usage,
+      providerCfg.pricing,
+      undefined,
+      false,
+    );
+    return c.body(await speech.arrayBuffer(), 200, {
+      "Content-Type": "application/octet-stream",
+    });
   });
 });
 

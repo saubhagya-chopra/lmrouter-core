@@ -71,6 +71,7 @@ OpenAI API
   /v1/openai/v1/images/edits         — Image editing
   /v1/openai/v1/embeddings           — Embeddings
   /v1/openai/v1/responses            — Responses
+  /v1/openai/v1/audio/speech         — Audio speech
   /v1/openai/v1/audio/transcriptions — Audio transcriptions
   /v1/openai/v1/audio/translations   — Audio translations
   /v1/openai/v1/models               — List available models

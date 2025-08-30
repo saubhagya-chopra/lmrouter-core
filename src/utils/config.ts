@@ -98,7 +98,11 @@ export interface LMRouterConfigModelProvider {
   pricing?: LMRouterConfigModelProviderPricing;
 }
 
-export type LMRouterConfigModelType = "language" | "image" | "embedding";
+export type LMRouterConfigModelType =
+  | "language"
+  | "image"
+  | "embedding"
+  | "audio";
 
 export interface LMRouterConfigModel {
   name?: string;
