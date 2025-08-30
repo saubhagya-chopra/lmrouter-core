@@ -2,7 +2,7 @@
 // Copyright (c) 2025 LMRouter Contributors
 
 import { Hono } from "hono";
-import type { EmbeddingCreateParams } from "openai/resources";
+import type { EmbeddingCreateParams } from "openai/resources/embeddings";
 
 import { OpenAIEmbeddingsAdapterFactory } from "../../../../adapters/openai/v1/embeddings/adapter.js";
 import { requireAuth } from "../../../../middlewares/auth.js";
