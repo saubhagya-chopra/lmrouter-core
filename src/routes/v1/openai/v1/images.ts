@@ -87,7 +87,7 @@ imagesRouter.post("/edits", async (c) => {
     const adapter = OpenAIImageEditAdapterFactory.getAdapter(provider);
     const timeKeeper = new TimeKeeper();
     timeKeeper.record();
-    if (reqBody.stream !== true) {
+    if ((reqBody.stream as unknown as string) !== "true") {
       const image = await adapter.sendRequest(provider, reqBody);
       timeKeeper.record();
       await recordApiCall(
