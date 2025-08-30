@@ -67,6 +67,7 @@ export interface LMRouterConfigModelProviderPricingFixed {
   input_image?: number;
   input_audio?: number;
   output?: number;
+  output_audio?: number;
   image?: number;
   web_search?: number;
   code_interpreter?: number;

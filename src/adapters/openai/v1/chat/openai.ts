@@ -50,7 +50,13 @@ export class OpenAIChatCompletionOpenAIAdapter
       input_audio:
         (completion as ChatCompletion).usage?.prompt_tokens_details
           ?.audio_tokens ?? 0,
-      output: (completion as ChatCompletion).usage?.completion_tokens ?? 0,
+      output:
+        ((completion as ChatCompletion).usage?.completion_tokens ?? 0) -
+        ((completion as ChatCompletion).usage?.completion_tokens_details
+          ?.audio_tokens ?? 0),
+      output_audio:
+        (completion as ChatCompletion).usage?.completion_tokens_details
+          ?.audio_tokens ?? 0,
       request: 1,
       input_cache_reads:
         (completion as ChatCompletion).usage?.prompt_tokens_details
