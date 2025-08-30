@@ -11,8 +11,10 @@ import { LMRouterAdapter } from "../../../adapter.js";
 import { OpenAIResponsesOpenAIAdapter } from "./openai.js";
 import { OpenAIResponsesOthersAdapter } from "./others.js";
 import type { LMRouterConfigProvider } from "../../../../utils/config.js";
+import type { ResponsesStore } from "../../../../utils/responses-store.js";
 
 export type OpenAIResponsesInputOptions = {
+  responsesStore: ResponsesStore;
   maxTokens?: number;
 };
 

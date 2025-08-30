@@ -47,6 +47,12 @@ export type LMRouterConfigAuth =
   | LMRouterConfigAuthDisabled
   | LMRouterConfigAuthEnabled;
 
+export interface LMRouterConfigResponsesStoreInMemory {
+  type: "in_memory";
+}
+
+export type LMRouterConfigResponsesStore = LMRouterConfigResponsesStoreInMemory;
+
 export type LMRouterConfigProviderType =
   | "openai"
   | "anthropic"
@@ -115,6 +121,7 @@ export interface LMRouterConfigModel {
 export interface LMRouterConfig {
   server: LMRouterConfigServer;
   auth: LMRouterConfigAuth;
+  responses_store: LMRouterConfigResponsesStore;
   access_keys: string[];
   providers: Record<string, LMRouterConfigProvider>;
   models: Record<string, LMRouterConfigModel>;

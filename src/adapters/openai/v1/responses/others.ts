@@ -28,7 +28,6 @@ import {
 } from "../chat/adapter.js";
 import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
 import type { LMRouterConfigProvider } from "../../../../utils/config.js";
-import { ResponsesStoreFactory } from "../../../../utils/responses-store.js";
 
 export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
   usage?: LMRouterApiCallUsage;
@@ -47,7 +46,7 @@ export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
     const response = await adapter.sendRequest(
       provider,
       this.convertRequest(
-        await ResponsesStoreFactory.getStore().hydrateRequest(request),
+        (await options?.responsesStore.hydrateRequest(request)) ?? request,
       ),
       {
         maxTokens: options?.maxTokens,
@@ -66,7 +65,7 @@ export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
     const stream = await adapter.sendRequestStreaming(
       provider,
       this.convertRequest(
-        await ResponsesStoreFactory.getStore().hydrateRequest(request),
+        (await options?.responsesStore.hydrateRequest(request)) ?? request,
       ),
       {
         maxTokens: options?.maxTokens,

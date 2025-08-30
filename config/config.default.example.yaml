@@ -6,6 +6,9 @@ server:
 auth:
   enabled: false
 
+responses_store:
+  type: in_memory
+
 access_keys: []
 
 providers:

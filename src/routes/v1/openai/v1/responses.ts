@@ -21,6 +21,7 @@ responsesRouter.use(requireAuth(), ensureBalance, parseModel);
 
 responsesRouter.post("/", async (c) => {
   const body = await c.req.json();
+  const responsesStore = ResponsesStoreFactory.getStore(c);
   return await iterateModelProviders(c, async (providerCfg, provider) => {
     const reqBody = { ...body } as ResponseCreateParamsBase;
     reqBody.model = providerCfg.model;
@@ -30,11 +31,12 @@ responsesRouter.post("/", async (c) => {
     timeKeeper.record();
     if (reqBody.stream !== true) {
       const response = await adapter.sendRequest(provider, reqBody, {
+        responsesStore,
         maxTokens: providerCfg.max_tokens,
       });
       timeKeeper.record();
       if (reqBody.store !== false) {
-        await ResponsesStoreFactory.getStore().set(reqBody, response);
+        await responsesStore.set(reqBody, response);
       }
       await recordApiCall(
         c,
@@ -50,6 +52,7 @@ responsesRouter.post("/", async (c) => {
     }
 
     const s = await adapter.sendRequestStreaming(provider, reqBody, {
+      responsesStore,
       maxTokens: providerCfg.max_tokens,
     });
     return streamSSE(c, async (stream) => {
@@ -61,7 +64,7 @@ responsesRouter.post("/", async (c) => {
         });
       }
       if (reqBody.store !== false && adapter.response) {
-        await ResponsesStoreFactory.getStore().set(reqBody, adapter.response);
+        await responsesStore.set(reqBody, adapter.response);
       }
       await recordApiCall(
         c,

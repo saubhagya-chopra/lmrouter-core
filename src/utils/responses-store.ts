@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
+import type { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 import type {
   Response,
   ResponseCreateParamsBase,
   ResponseInput,
 } from "openai/resources/responses/responses";
+
+import { getConfig } from "./config.js";
+import type { ContextEnv } from "../types/hono.js";
 
 interface ResponsesStoreItem {
   request: ResponseCreateParamsBase;
@@ -13,7 +18,7 @@ interface ResponsesStoreItem {
   fullContext: ResponseInput;
 }
 
-abstract class ResponsesStore {
+export abstract class ResponsesStore {
   abstract get(responseId: string): Promise<ResponsesStoreItem | null>;
 
   async set(
@@ -84,9 +89,18 @@ class InMemoryResponsesStore extends ResponsesStore {
 export class ResponsesStoreFactory {
   private static storeCache: ResponsesStore | null = null;
 
-  static getStore(): ResponsesStore {
+  static getStore(c: Context<ContextEnv>): ResponsesStore {
     if (!this.storeCache) {
-      this.storeCache = new InMemoryResponsesStore();
+      const cfg = getConfig(c);
+      switch (cfg.responses_store.type) {
+        case "in_memory":
+          this.storeCache = new InMemoryResponsesStore();
+          break;
+        default:
+          throw new HTTPException(500, {
+            message: `Unsupported responses store type: ${cfg.responses_store.type}`,
+          });
+      }
     }
     return this.storeCache;
   }
