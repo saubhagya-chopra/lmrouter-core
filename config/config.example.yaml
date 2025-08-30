@@ -40,6 +40,14 @@ models:
     providers:
       - provider: openai
         model: gpt-image-1
+  openai/gpt-4o-transcribe:
+    providers:
+      - provider: openai
+        model: gpt-4o-transcribe
+  openai/whisper-1:
+    providers:
+      - provider: openai
+        model: whisper-1
   openai/text-embedding-3-large:
     providers:
       - provider: openai
