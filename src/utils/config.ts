@@ -39,6 +39,7 @@ export interface LMRouterConfigAuthEnabled {
     url: string;
     telemetry?: boolean;
     trusted_origins?: string[];
+    social_providers?: Record<string, any>;
   };
   billing: LMRouterConfigAuthEnabledBilling;
 }
