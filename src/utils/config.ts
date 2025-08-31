@@ -51,7 +51,15 @@ export interface LMRouterConfigResponsesStoreInMemory {
   type: "in_memory";
 }
 
-export type LMRouterConfigResponsesStore = LMRouterConfigResponsesStoreInMemory;
+export interface LMRouterConfigResponsesStoreUpstashRedis {
+  type: "upstash_redis";
+  url: string;
+  token: string;
+}
+
+export type LMRouterConfigResponsesStore =
+  | LMRouterConfigResponsesStoreInMemory
+  | LMRouterConfigResponsesStoreUpstashRedis;
 
 export type LMRouterConfigProviderType =
   | "openai"
