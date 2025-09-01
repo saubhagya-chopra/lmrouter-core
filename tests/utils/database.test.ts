@@ -1,9 +1,7 @@
-// database.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { HTTPException } from "hono/http-exception";
 import { error } from "console";
 
-// 🔧 Point this to the module that exports getDb (the file you pasted)
 const MODULE_UNDER_TEST = "../../src/utils/database";
 
 // --- Mocks ---

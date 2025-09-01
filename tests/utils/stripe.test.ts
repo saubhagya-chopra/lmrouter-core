@@ -1,8 +1,6 @@
-// stripe.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { HTTPException } from "hono/http-exception";
 
-// 🔧 point to your file
 const MODULE_UNDER_TEST = "../../src/utils/stripe";
 
 // --- Mocks ---

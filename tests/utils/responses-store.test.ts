@@ -1,7 +1,6 @@
 // responses-store.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// ⬇️ point to the file you pasted (that exports ResponsesStoreFactory)
 const MODULE_UNDER_TEST = "../../src/utils/responses-store";
 
 async function importFresh() {
@@ -13,12 +12,7 @@ beforeEach(() => {
   vi.useRealTimers();
 });
 
-/**
- * Helpers to craft minimal shapes that the code needs.
- * We only rely on properties the implementation actually reads:
- * - request.previous_response_id, request.input
- * - response.id, response.output
- */
+
 const msg = (role: "user" | "assistant", content: string) => ({
   type: "message",
   role,

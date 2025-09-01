@@ -2,8 +2,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { HTTPException } from "hono/http-exception";
 
-// ✅ UPDATE THIS to the real file path that exports `getAuth`
-const MODULE_UNDER_TEST = "../../src/utils/auth"; // e.g. "../../src/utils/auth"
+
+const MODULE_UNDER_TEST = "../../src/utils/auth"; 
 
 const betterAuthMock = vi.fn((opts: any) => ({
   __opts: opts,

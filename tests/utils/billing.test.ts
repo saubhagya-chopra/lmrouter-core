@@ -1,8 +1,6 @@
-// billing-utils.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { HTTPException } from "hono/http-exception";
 
-// 🔧 UPDATE this to your module’s path (the file you pasted)
 const MODULE_UNDER_TEST = "../../src/utils/billing.js";
 
 // ---- Mocks (only your internal modules; no external libs) ----

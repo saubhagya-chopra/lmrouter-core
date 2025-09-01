@@ -1,5 +1,3 @@
-
-// ⚠️ Adjust these paths to your repo structure (alias '@' -> './src' in vitest.config.ts)
 import { AnthropicMessagesAdapterFactory } from "../../../../../src/adapters/anthropic/v1/messages/adapter";
 import { AnthropicMessagesAnthropicAdapter } from "../../../../../src/adapters/anthropic/v1/messages/anthropic";
 import { AnthropicMessagesOthersAdapter } from "../../../../../src/adapters/anthropic/v1/messages/others";

@@ -1,7 +1,5 @@
-// config.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// ✅ point this to the file you pasted (that exports getConfig)
 const MODULE_UNDER_TEST = "../../src/utils/config";
 
 // --- Mocks ---

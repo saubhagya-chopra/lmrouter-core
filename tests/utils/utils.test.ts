@@ -1,7 +1,5 @@
-// utils.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// 🔧 Point this at the module you pasted (that exports getUptime, getRemoteIp, getModel, iterateModelProviders)
 const MODULE_UNDER_TEST = "../../src/utils/utils";
 
 // ---- Mocks ----

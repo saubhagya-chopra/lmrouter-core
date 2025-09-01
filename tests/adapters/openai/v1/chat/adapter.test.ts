@@ -9,8 +9,6 @@ describe("messages/adapter smoke", () => {
   });
 });
 
-// ⚠️ Adjust these to your src layout / alias
-
 describe("OpenAIChatCompletionAdapterFactory.getAdapter", () => {
   it('returns OpenAIChatCompletionAnthropicAdapter for provider.type = "anthropic"', () => {
     const provider: any = { type: "anthropic" };
