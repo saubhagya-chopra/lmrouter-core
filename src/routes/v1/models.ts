@@ -3,6 +3,10 @@
 
 import { Hono } from "hono";
 
+import type {
+  LMRouterModelGetResponse,
+  LMRouterModelListResponse,
+} from "../../types/api.js";
 import type { ContextEnv } from "../../types/hono.js";
 import { getConfig } from "../../utils/config.js";
 
@@ -34,7 +38,7 @@ modelsRouter.get("/:model{.+}", (c) => {
         api_key: undefined,
       },
     })),
-  });
+  } as LMRouterModelGetResponse);
 });
 
 modelsRouter.get("/", (c) => {
@@ -54,7 +58,7 @@ modelsRouter.get("/", (c) => {
     };
   });
 
-  return c.json({ models });
+  return c.json({ models } as LMRouterModelListResponse);
 });
 
 export default modelsRouter;
