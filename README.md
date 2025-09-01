@@ -25,7 +25,7 @@ The demo environment proxies requests to OpenRouter and supports both the **Open
 **Connect Claude Code to LMRouter**
 
 ```bash
-ANTHROPIC_BASE_URL=https://api.lmrouter.com/v1/anthropic \
+ANTHROPIC_BASE_URL=https://api.lmrouter.com/anthropic \
 ANTHROPIC_AUTH_TOKEN=BYOK:<YOUR_OPENROUTER_API_KEY> \
 ANTHROPIC_MODEL=<YOUR_MODEL_NAME> claude
 ```
@@ -66,19 +66,19 @@ LMRouter provides drop-in compatibility with existing APIs, so applications that
 
 ```
 OpenAI API
-  /v1/openai/v1/chat/completions     — Chat Completions
-  /v1/openai/v1/images/generations   — Image generation
-  /v1/openai/v1/images/edits         — Image editing
-  /v1/openai/v1/embeddings           — Embeddings
-  /v1/openai/v1/responses            — Responses
-  /v1/openai/v1/audio/speech         — Audio speech
-  /v1/openai/v1/audio/transcriptions — Audio transcriptions
-  /v1/openai/v1/audio/translations   — Audio translations
-  /v1/openai/v1/models               — List available models
+  /openai/v1/chat/completions     — Chat Completions
+  /openai/v1/images/generations   — Image generation
+  /openai/v1/images/edits         — Image editing
+  /openai/v1/embeddings           — Embeddings
+  /openai/v1/responses            — Responses
+  /openai/v1/audio/speech         — Audio speech
+  /openai/v1/audio/transcriptions — Audio transcriptions
+  /openai/v1/audio/translations   — Audio translations
+  /openai/v1/models               — List available models
 
 Anthropic API
-  /v1/anthropic/v1/messages          — Messages
-  /v1/anthropic/v1/models            — List available models
+  /anthropic/v1/messages          — Messages
+  /anthropic/v1/models            — List available models
 ```
 
 ### Multi-Provider Support
