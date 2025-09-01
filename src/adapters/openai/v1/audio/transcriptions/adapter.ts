@@ -9,7 +9,7 @@ import type {
 
 import { LMRouterAdapter } from "../../../../adapter.js";
 import { OpenAITranscriptionsOpenAIAdapter } from "./openai.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../types/config.js";
 
 export type OpenAITranscriptionsAdapter = LMRouterAdapter<
   TranscriptionCreateParamsBase,

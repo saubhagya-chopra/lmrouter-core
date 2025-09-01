@@ -10,6 +10,8 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageGenerationAdapter } from "./adapter.js";
+import type { LMRouterApiCallUsage } from "../../../../../types/billing.js";
+import type { LMRouterConfigProvider } from "../../../../../types/config.js";
 import type {
   FireworksImageGenerationFlux1KontextRequest,
   FireworksImageGenerationFlux1KontextResponse,
@@ -18,8 +20,6 @@ import type {
   FireworksImageGenerationGetFlux1KontextImageRequest,
   FireworksImageGenerationGetFlux1KontextImageResponse,
 } from "../../../../../types/fireworks.js";
-import type { LMRouterApiCallUsage } from "../../../../../utils/billing.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAIImageGenerationFireworksAdapter
   implements OpenAIImageGenerationAdapter

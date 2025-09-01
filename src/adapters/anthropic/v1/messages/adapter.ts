@@ -10,11 +10,11 @@ import type {
 import { LMRouterAdapter } from "../../../adapter.js";
 import { AnthropicMessagesAnthropicAdapter } from "./anthropic.js";
 import { AnthropicMessagesOthersAdapter } from "./others.js";
-import type { LMRouterConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../types/config.js";
 
-export type AnthropicMessagesInputOptions = {
+export interface AnthropicMessagesInputOptions {
   maxTokens?: number;
-};
+}
 
 export type AnthropicMessagesAdapter = LMRouterAdapter<
   MessageCreateParamsBase,

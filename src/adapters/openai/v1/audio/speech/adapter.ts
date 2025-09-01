@@ -5,7 +5,7 @@ import type { SpeechCreateParams } from "openai/resources/audio/speech";
 
 import { LMRouterAdapter } from "../../../../adapter.js";
 import { OpenAISpeechOpenAIAdapter } from "./openai.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../types/config.js";
 
 export type OpenAISpeechAdapter = LMRouterAdapter<
   SpeechCreateParams,

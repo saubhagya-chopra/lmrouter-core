@@ -9,8 +9,8 @@ import type {
 } from "openai/resources/embeddings";
 
 import type { OpenAIEmbeddingsAdapter } from "./adapter.js";
-import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
-import type { LMRouterConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../types/billing.js";
+import type { LMRouterConfigProvider } from "../../../../types/config.js";
 
 export class OpenAIEmbeddingsOpenAIAdapter implements OpenAIEmbeddingsAdapter {
   usage?: LMRouterApiCallUsage;

@@ -11,7 +11,7 @@ import { LMRouterAdapter } from "../../../../adapter.js";
 import { OpenAIImageGenerationFireworksAdapter } from "./fireworks.js";
 import { OpenAIImageGenerationGoogleAdapter } from "./google.js";
 import { OpenAIImageGenerationOpenAIAdapter } from "./openai.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../types/config.js";
 
 export type OpenAIImageGenerationAdapter = LMRouterAdapter<
   ImageGenerateParamsBase,

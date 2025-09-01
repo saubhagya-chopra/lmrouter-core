@@ -12,9 +12,9 @@ import type {
 } from "openai/resources/audio/transcriptions";
 
 import type { OpenAITranscriptionsAdapter } from "./adapter.js";
+import type { LMRouterApiCallUsage } from "../../../../../types/billing.js";
+import type { LMRouterConfigProvider } from "../../../../../types/config.js";
 import { getAudioDuration } from "../../../../../utils/audio.js";
-import type { LMRouterApiCallUsage } from "../../../../../utils/billing.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
 
 export class OpenAITranscriptionsOpenAIAdapter
   implements OpenAITranscriptionsAdapter

@@ -4,42 +4,7 @@
 import { sql } from "drizzle-orm";
 import { jsonb, numeric, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-import type { LMRouterApiCallUsage } from "../utils/billing.js";
-import type { LMRouterConfigModelProviderPricing } from "../utils/config.js";
-
-export interface LedgerMetadataApiCallTimestamps {
-  start: number;
-  first_token?: number;
-  end: number;
-}
-
-export interface LedgerMetadataApiCall {
-  type: "api-call";
-  data: {
-    api_key_id?: string;
-    model: string;
-    provider: string;
-    endpoint: string;
-    status: number;
-    stream?: boolean;
-    error?: string;
-    timestamps: LedgerMetadataApiCallTimestamps;
-    ip?: string;
-    referer: {
-      name?: string;
-      url?: string;
-    };
-    usage?: LMRouterApiCallUsage;
-    pricing?: LMRouterConfigModelProviderPricing;
-  };
-}
-
-export interface LedgerMetadataPayment {
-  type: "payment";
-  data: Record<string, unknown>;
-}
-
-export type LedgerMetadata = LedgerMetadataApiCall | LedgerMetadataPayment;
+import type { LMRouterLedgerMetadata } from "../types/billing.js";
 
 export const apiKey = pgTable("api_key", {
   id: text("id")
@@ -80,6 +45,6 @@ export const ledger = pgTable("ledger", {
   ownerType: text("owner_type").notNull(),
   ownerId: text("owner_id").notNull(),
   amount: numeric("amount", { precision: 20, scale: 8 }).notNull(),
-  metadata: jsonb("metadata").$type<LedgerMetadata>().notNull(),
+  metadata: jsonb("metadata").$type<LMRouterLedgerMetadata>().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

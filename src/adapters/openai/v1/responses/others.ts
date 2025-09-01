@@ -26,8 +26,8 @@ import {
   OpenAIChatCompletionAdapterFactory,
   type OpenAIChatCompletionAdapter,
 } from "../chat/adapter.js";
-import type { LMRouterApiCallUsage } from "../../../../utils/billing.js";
-import type { LMRouterConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../types/billing.js";
+import type { LMRouterConfigProvider } from "../../../../types/config.js";
 
 export class OpenAIResponsesOthersAdapter implements OpenAIResponsesAdapter {
   usage?: LMRouterApiCallUsage;

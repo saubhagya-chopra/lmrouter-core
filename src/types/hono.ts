@@ -3,8 +3,8 @@
 
 import type { Session, User } from "better-auth";
 
+import type { LMRouterConfigModel } from "./config.js";
 import { apiKey } from "../models/billing.js";
-import type { LMRouterConfigModel } from "../utils/config.js";
 
 export type AuthType = "better-auth" | "api-key" | "access-key" | "byok";
 
@@ -31,7 +31,7 @@ export interface AuthByok {
   byok: string;
 }
 
-export type ContextEnv = {
+export interface ContextEnv {
   Variables: {
     auth?: AuthBetterAuth | AuthApiKey | AuthAccessKey | AuthByok;
     modelName?: string;
@@ -40,4 +40,4 @@ export type ContextEnv = {
   Bindings: {
     LMROUTER_CONFIG?: string;
   };
-};
+}

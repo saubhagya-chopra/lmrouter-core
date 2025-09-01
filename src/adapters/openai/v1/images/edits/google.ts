@@ -16,8 +16,8 @@ import type {
 } from "openai/resources/images";
 
 import type { OpenAIImageEditAdapter } from "./adapter.js";
-import type { LMRouterApiCallUsage } from "../../../../../utils/billing.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterApiCallUsage } from "../../../../../types/billing.js";
+import type { LMRouterConfigProvider } from "../../../../../types/config.js";
 
 export class OpenAIImageEditGoogleAdapter implements OpenAIImageEditAdapter {
   usage?: LMRouterApiCallUsage;

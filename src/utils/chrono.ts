@@ -3,7 +3,7 @@
 
 import { HTTPException } from "hono/http-exception";
 
-import type { LedgerMetadataApiCallTimestamps } from "../models/billing.js";
+import type { LMRouterLedgerMetadataApiCallTimestamps } from "../types/billing.js";
 
 export class TimeKeeper {
   private first?: number;
@@ -24,7 +24,7 @@ export class TimeKeeper {
     this.last = Date.now();
   }
 
-  timestamps(): LedgerMetadataApiCallTimestamps {
+  timestamps(): LMRouterLedgerMetadataApiCallTimestamps {
     if (!this.first || !this.second) {
       throw new HTTPException(500, {
         message: "Internal server error",

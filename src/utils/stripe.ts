@@ -6,9 +6,10 @@ import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import stripe from "stripe";
 
-import { getConfig, type LMRouterConfigAuthEnabledBilling } from "./config.js";
+import { getConfig } from "./config.js";
 import { getDb } from "./database.js";
 import { user as userModel } from "../models/auth.js";
+import type { LMRouterConfigAuthEnabledBilling } from "../types/config.js";
 import type { AuthBetterAuth, ContextEnv } from "../types/hono.js";
 
 let stripeCache: StripeClient | null = null;
