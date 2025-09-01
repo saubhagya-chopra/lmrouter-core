@@ -1,6 +1,10 @@
 // apiKey.test.ts
 import { describe, it, expect } from "vitest";
-import { generateApiKey, hashApiKey, getApiKeyPrefix } from "../../src/utils/api-key";
+import {
+  generateApiKey,
+  hashApiKey,
+  getApiKeyPrefix,
+} from "../../src/utils/api-key";
 
 describe("generateApiKey", () => {
   it("should generate a string starting with sk-lmr-", () => {

@@ -1,13 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { OpenAIChatCompletionOpenAIAdapter } from "../../../../../src/adapters/openai/v1/chat/openai";
 
-
 describe("messages/adapter smoke", () => {
   it("runs", () => {
     expect(true).toBe(true);
   });
 });
-
 
 // ---- Mock openai SDK ----
 let createImpl: (...args: any[]) => any;

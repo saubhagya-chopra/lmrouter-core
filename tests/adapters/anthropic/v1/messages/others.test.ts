@@ -3,7 +3,6 @@ import { describe, it, expect, vi } from "vitest";
 // ⚠️ Adjust this import path to your repo structure
 import { AnthropicMessagesOthersAdapter } from "../../../../../src/adapters/anthropic/v1/messages/others";
 
-
 // --- Helpers / minimal fakes ---
 const provider: any = {
   name: "fake",

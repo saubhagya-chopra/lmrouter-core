@@ -2,8 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { HTTPException } from "hono/http-exception";
 
-
-const MODULE_UNDER_TEST = "../../src/utils/auth"; 
+const MODULE_UNDER_TEST = "../../src/utils/auth";
 
 const betterAuthMock = vi.fn((opts: any) => ({
   __opts: opts,

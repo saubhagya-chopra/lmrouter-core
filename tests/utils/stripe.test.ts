@@ -85,7 +85,6 @@ describe("getStripe", () => {
     }
   });
 
-
   it("initializes StripeClient with billing config and caches the instance", async () => {
     const { getStripe } = await importFresh();
 

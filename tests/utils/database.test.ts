@@ -39,7 +39,6 @@ beforeEach(() => {
 });
 
 describe("getDb", () => {
-
   it("initializes drizzle with database_url and merged schema", async () => {
     const { getDb } = await importFresh();
 

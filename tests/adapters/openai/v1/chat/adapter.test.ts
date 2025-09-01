@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { OpenAIChatCompletionAdapterFactory } from "../../../../../src/adapters/openai/v1/chat/adapter" 
+import { OpenAIChatCompletionAdapterFactory } from "../../../../../src/adapters/openai/v1/chat/adapter";
 import { OpenAIChatCompletionAnthropicAdapter } from "../../../../../src/adapters/openai/v1/chat/anthropic";
 import { OpenAIChatCompletionOpenAIAdapter } from "../../../../../src/adapters/openai/v1/chat/openai";
 
@@ -35,4 +35,3 @@ describe("OpenAIChatCompletionAdapterFactory.getAdapter", () => {
     expect(a2).not.toBe(a1);
   });
 });
-

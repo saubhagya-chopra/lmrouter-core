@@ -1,169 +1,196 @@
-// responses-store.test.ts
+// tests/responses-store.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type {
+  Response,
+  ResponseCreateParamsBase,
+} from "openai/resources/responses/responses";
 
-const MODULE_UNDER_TEST = "../../src/utils/responses-store";
+import {
+  ResponsesStore,
+  ResponsesStoreFactory,
+} from "../../src/utils/responses-store"; // adjust path
 
-async function importFresh() {
-  vi.resetModules();
-  return await import(MODULE_UNDER_TEST);
-}
+// --- mocks ---
+vi.mock("../../src/utils/config.js", () => ({
+  getConfig: vi.fn(),
+}));
 
-beforeEach(() => {
-  vi.useRealTimers();
+vi.mock("@upstash/redis", () => {
+  return {
+    Redis: vi.fn().mockImplementation(() => ({
+      get: vi.fn(),
+      set: vi.fn(),
+    })),
+  };
 });
 
+import { getConfig } from "../../src/utils/config";
+import { Redis } from "@upstash/redis";
 
-const msg = (role: "user" | "assistant", content: string) => ({
-  type: "message",
-  role,
-  content,
-});
+// Dummy Response object
+const makeResponse = (id: string, outputContent = "hi"): Response =>
+  ({
+    id,
+    output: [{ type: "message", role: "assistant", content: outputContent }],
+  }) as any;
 
-const makeResponse = (id: string, outputs: any[] = []) =>
-  ({ id, output: outputs }) as any;
+describe("ResponsesStore base class", () => {
+  class TestStore extends ResponsesStore {
+    public items: any[] = [];
+    async get(): Promise<any> {
+      return null;
+    }
+    protected async setItem(item: any): Promise<void> {
+      this.items.push(item);
+    }
+  }
 
-describe("ResponsesStore / InMemory via ResponsesStoreFactory", () => {
-  it("getStore() returns a singleton", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const s1 = ResponsesStoreFactory.getStore();
-    const s2 = ResponsesStoreFactory.getStore();
-    expect(s1).toBe(s2);
+  let store: TestStore;
+
+  beforeEach(() => {
+    store = new TestStore();
   });
 
-  it("get() returns null for unknown id", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const store = ResponsesStoreFactory.getStore();
-    const item = await store.get("nope");
-    expect(item).toBeNull();
-  });
-
-  it("set() stores item and builds fullContext when request.input is string", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const store = ResponsesStoreFactory.getStore();
-
-    const req: any = { input: "Hello" };
-    const res = makeResponse("r1", [msg("assistant", "Hi!")]);
+  it("set() stores request, response, and builds fullContext with string input", async () => {
+    const req: ResponseCreateParamsBase = { input: "hello" } as any;
+    const res = makeResponse("r1");
 
     await store.set(req, res);
 
-    const saved = await store.get("r1");
-    expect(saved).not.toBeNull();
-    expect(saved!.request).toBe(req);
-    expect(saved!.response).toBe(res);
-    expect(saved!.fullContext).toEqual([
-      msg("user", "Hello"),
-      msg("assistant", "Hi!"),
+    expect(store.items[0].fullContext).toEqual([
+      { type: "message", role: "user", content: "hello" },
+      ...res.output,
     ]);
   });
 
-  it("set() appends array input as-is and response output", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const store = ResponsesStoreFactory.getStore();
-
-    const req: any = { input: [msg("user", "A"), msg("user", "B")] };
-    const res = makeResponse("r2", [msg("assistant", "C")]);
+  it("set() stores request, response, and builds fullContext with array input", async () => {
+    const req: ResponseCreateParamsBase = {
+      input: [{ type: "message", role: "user", content: "part1" }],
+    } as any;
+    const res = makeResponse("r2");
 
     await store.set(req, res);
 
-    const saved = await store.get("r2");
-    expect(saved!.fullContext).toEqual([
-      msg("user", "A"),
-      msg("user", "B"),
-      msg("assistant", "C"),
+    expect(store.items[0].fullContext).toEqual([
+      { type: "message", role: "user", content: "part1" },
+      ...res.output,
     ]);
   });
 
-  it("set() with previous_response_id chains prior fullContext before new input/output", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const store = ResponsesStoreFactory.getStore();
-
-    // First turn
-    const req1: any = { input: "First" };
-    const res1 = makeResponse("rA", [msg("assistant", "First-Reply")]);
-    await store.set(req1, res1);
-
-    // Second turn, chains from rA
-    const req2: any = { previous_response_id: "rA", input: "Second" };
-    const res2 = makeResponse("rB", [msg("assistant", "Second-Reply")]);
-    await store.set(req2, res2);
-
-    const saved2 = await store.get("rB");
-    expect(saved2!.fullContext).toEqual([
-      // prior fullContext from rA:
-      msg("user", "First"),
-      msg("assistant", "First-Reply"),
-      // new input:
-      msg("user", "Second"),
-      // new output:
-      msg("assistant", "Second-Reply"),
-    ]);
-  });
-
-  it("hydrateRequest() returns request unchanged if no previous_response_id", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const store = ResponsesStoreFactory.getStore();
-
-    const req: any = { input: "X" };
-    const hydrated = await store.hydrateRequest(req);
-    expect(hydrated).toBe(req); // same reference OK since method returns input
-  });
-
-  it("hydrateRequest() leaves request unchanged if previous id not found", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const store = ResponsesStoreFactory.getStore();
-
-    const req: any = { previous_response_id: "missing", input: "Y" };
-    const hydrated = await store.hydrateRequest(req);
-
-    // Should return the same request unchanged
-    expect(hydrated).toEqual(req);
-    // Input should still be a string
-    expect(typeof hydrated.input).toBe("string");
-    expect(hydrated.input).toBe("Y");
-  });
-
-
-  it("hydrateRequest() builds input array from previous fullContext + current string input", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const store = ResponsesStoreFactory.getStore();
-
-    // seed previous
-    const req1: any = { input: "Seed" };
-    const res1 = makeResponse("seed", [msg("assistant", "Ack")]);
-    await store.set(req1, res1);
-
-    // now hydrate a follow-up
-    const req2: any = { previous_response_id: "seed", input: "Follow-up" };
-    const hydrated = await store.hydrateRequest(req2);
-
-    expect(Array.isArray(hydrated.input)).toBe(true);
-    expect(hydrated.input).toEqual([
-      msg("user", "Seed"),
-      msg("assistant", "Ack"),
-      msg("user", "Follow-up"),
-    ]);
-  });
-
-  it("hydrateRequest() appends array input to previous fullContext", async () => {
-    const { ResponsesStoreFactory } = await importFresh();
-    const store = ResponsesStoreFactory.getStore();
-
-    // seed previous
-    const req1: any = { input: [msg("user", "M1")] };
-    const res1 = makeResponse("seed2", [msg("assistant", "N1")]);
-    await store.set(req1, res1);
-
-    const req2: any = {
-      previous_response_id: "seed2",
-      input: [msg("user", "M2"), msg("user", "M3")],
+  it("set() includes previous fullContext if previous_response_id exists", async () => {
+    const prev = {
+      request: {} as any,
+      response: makeResponse("prev"),
+      fullContext: [{ type: "message", role: "user", content: "old" }],
     };
-    const hydrated = await store.hydrateRequest(req2);
+    vi.spyOn(store, "get").mockResolvedValue(prev);
 
-    expect(hydrated.input).toEqual([
-      msg("user", "M1"),
-      msg("assistant", "N1"),
-      msg("user", "M2"),
-      msg("user", "M3"),
+    const req: ResponseCreateParamsBase = {
+      input: "new",
+      previous_response_id: "prev",
+    } as any;
+    const res = makeResponse("r3");
+
+    await store.set(req, res);
+
+    expect(store.items[0].fullContext).toEqual([
+      ...prev.fullContext,
+      { type: "message", role: "user", content: "new" },
+      ...res.output,
     ]);
+  });
+
+  it("hydrateRequest returns unchanged request if no previous_response_id", async () => {
+    const req: ResponseCreateParamsBase = { input: "test" } as any;
+    const hydrated = await store.hydrateRequest(req);
+    expect(hydrated).toBe(req);
+  });
+
+  it("hydrateRequest merges context from previous when available", async () => {
+    const prevItem = {
+      fullContext: [{ type: "message", role: "assistant", content: "old" }],
+    };
+    vi.spyOn(store, "get").mockResolvedValue(prevItem as any);
+
+    const req: ResponseCreateParamsBase = {
+      input: "new",
+      previous_response_id: "p1",
+    } as any;
+
+    const hydrated = await store.hydrateRequest(req);
+    expect(hydrated.input).toContainEqual(prevItem.fullContext[0]);
+    expect(hydrated.input).toContainEqual({
+      type: "message",
+      role: "user",
+      content: "new",
+    });
+  });
+});
+
+describe("InMemoryResponsesStore", () => {
+  it("stores and retrieves by response.id", async () => {
+    const { InMemoryResponsesStore } = await import(
+      "../../src/utils/responses-store"
+    );
+
+    const store = new InMemoryResponsesStore();
+    const res = makeResponse("x1");
+    await store.set({ input: "q" } as any, res);
+
+    const item = await store.get("x1");
+    expect(item?.response.id).toBe("x1");
+  });
+});
+
+describe("UpstashRedisResponsesStore", () => {
+  it("calls redis.get and redis.set", async () => {
+    const { UpstashRedisResponsesStore } = await import(
+      "../../src/utils/responses-store"
+    );
+
+    const redisInstance = (Redis as any).mock.instances[0];
+    redisInstance.get.mockResolvedValue({ foo: "bar" });
+
+    const store = new UpstashRedisResponsesStore("url", "token");
+
+    await store.set({ input: "a" } as any, makeResponse("id1"));
+    expect(redisInstance.set).toHaveBeenCalledWith("id1", expect.any(Object));
+
+    const out = await store.get("id1");
+    expect(out).toEqual({ foo: "bar" });
+  });
+});
+
+describe("ResponsesStoreFactory", () => {
+  beforeEach(() => {
+    (ResponsesStoreFactory as any).storeCache = null;
+  });
+
+  it("returns InMemoryResponsesStore if config type = in_memory", () => {
+    vi.mocked(getConfig).mockReturnValue({
+      responses_store: { type: "in_memory" },
+    } as any);
+
+    const store = ResponsesStoreFactory.getStore({} as any);
+    expect(store.constructor.name).toBe("InMemoryResponsesStore");
+  });
+
+  it("returns UpstashRedisResponsesStore if config type = upstash_redis", () => {
+    vi.mocked(getConfig).mockReturnValue({
+      responses_store: { type: "upstash_redis", url: "u", token: "t" },
+    } as any);
+
+    const store = ResponsesStoreFactory.getStore({} as any);
+    expect(store.constructor.name).toBe("UpstashRedisResponsesStore");
+  });
+
+  it("caches the store instance", () => {
+    vi.mocked(getConfig).mockReturnValue({
+      responses_store: { type: "in_memory" },
+    } as any);
+
+    const s1 = ResponsesStoreFactory.getStore({} as any);
+    const s2 = ResponsesStoreFactory.getStore({} as any);
+    expect(s1).toBe(s2);
   });
 });

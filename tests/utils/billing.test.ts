@@ -66,7 +66,6 @@ describe("calculateCost", () => {
     );
   });
 
-
   it("selects matching tier via json-logic", async () => {
     const { calculateCost } = await importFresh();
     const usage = { service_tier: "pro", request: 1 };
@@ -143,7 +142,6 @@ describe("recordApiCall", () => {
     );
     expect(updateBillingSpy).not.toHaveBeenCalled();
   });
-
 });
 
 // ---------- handleStripeWebhook ----------

@@ -2,13 +2,11 @@ import { describe, it, expect, vi } from "vitest";
 import { OpenAIChatCompletionAnthropicAdapter } from "../../../../../src/adapters/openai/v1/chat/anthropic";
 import * as AnthropicFactoryMod from "../../../../../src/adapters/anthropic/v1/messages/adapter";
 
-
 describe("messages/adapter smoke", () => {
   it("runs", () => {
     expect(true).toBe(true);
   });
 });
-
 
 type RawEvent =
   import("@anthropic-ai/sdk/resources/messages").RawMessageStreamEvent;
