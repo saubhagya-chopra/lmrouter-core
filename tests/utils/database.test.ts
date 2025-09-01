@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-
 const MODULE_UNDER_TEST = "../../src/utils/database";
 
 // --- Mocks ---
