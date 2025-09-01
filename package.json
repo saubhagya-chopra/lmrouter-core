@@ -1,6 +1,6 @@
 {
   "name": "@lmrouter/cli",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "An open-source, all-in-one AI API router",
   "homepage": "https://lmrouter.com/",
   "bugs": {
@@ -35,15 +35,17 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.57.0",
-    "@better-auth/stripe": "^1.3.7",
+    "@better-auth/stripe": "1.3.8-beta.8",
     "@google/genai": "^1.14.0",
     "@hono/node-server": "^1.18.1",
     "@neondatabase/serverless": "^1.0.1",
-    "better-auth": "^1.3.7",
+    "@upstash/redis": "^1.35.3",
+    "better-auth": "1.3.8-beta.8",
     "decimal.js": "^10.6.0",
     "drizzle-orm": "^0.44.4",
     "hono": "^4.8.12",
     "json-logic-js": "^2.0.5",
+    "music-metadata": "^11.8.3",
     "openai": "^5.11.0",
     "stripe": "^18.5.0",
     "yaml": "^2.8.0"

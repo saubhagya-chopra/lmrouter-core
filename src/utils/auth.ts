@@ -62,10 +62,11 @@ export const getAuth = (
           onEvent: handleStripeWebhook,
         }) as BetterAuthPlugin,
       ],
+      socialProviders: cfg.auth.better_auth.social_providers,
     });
   }
   return authCache;
 };
 
-// Uncomment to call `npm run auth:generate`
+// Uncomment to call `pnpm auth:generate`
 // export const auth = getAuth();

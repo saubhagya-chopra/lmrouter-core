@@ -41,6 +41,8 @@ imagesRouter.post("/generations", async (c) => {
         timeKeeper.timestamps(),
         adapter.usage,
         providerCfg.pricing,
+        undefined,
+        false,
       );
       return c.json(image);
     }
@@ -60,6 +62,8 @@ imagesRouter.post("/generations", async (c) => {
           timeKeeper.timestamps(),
           adapter.usage,
           providerCfg.pricing,
+          undefined,
+          true,
         );
       }
     });
@@ -97,6 +101,8 @@ imagesRouter.post("/edits", async (c) => {
         timeKeeper.timestamps(),
         adapter.usage,
         providerCfg.pricing,
+        undefined,
+        false,
       );
       return c.json(image);
     }
@@ -116,6 +122,8 @@ imagesRouter.post("/edits", async (c) => {
           timeKeeper.timestamps(),
           adapter.usage,
           providerCfg.pricing,
+          undefined,
+          true,
         );
       }
     });

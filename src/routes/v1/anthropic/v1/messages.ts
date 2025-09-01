@@ -39,6 +39,8 @@ messagesRouter.post("/", async (c) => {
         timeKeeper.timestamps(),
         adapter.usage,
         providerCfg.pricing,
+        undefined,
+        false,
       );
       return c.json(completion);
     }
@@ -61,6 +63,8 @@ messagesRouter.post("/", async (c) => {
         timeKeeper.timestamps(),
         adapter.usage,
         providerCfg.pricing,
+        undefined,
+        true,
       );
     });
   });

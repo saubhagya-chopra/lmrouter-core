@@ -8,7 +8,7 @@ import type {
 
 import { LMRouterAdapter } from "../../../adapter.js";
 import { OpenAIEmbeddingsOpenAIAdapter } from "./openai.js";
-import type { LMRouterConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../types/config.js";
 
 export type OpenAIEmbeddingsAdapter = LMRouterAdapter<
   EmbeddingCreateParams,

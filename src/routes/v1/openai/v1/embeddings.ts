@@ -35,6 +35,8 @@ embeddingsRouter.post("/", async (c) => {
       timeKeeper.timestamps(),
       adapter.usage,
       providerCfg.pricing,
+      undefined,
+      false,
     );
     return c.json(embeddings);
   });

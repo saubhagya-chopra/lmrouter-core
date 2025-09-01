@@ -10,11 +10,13 @@ import type {
 import { LMRouterAdapter } from "../../../adapter.js";
 import { OpenAIResponsesOpenAIAdapter } from "./openai.js";
 import { OpenAIResponsesOthersAdapter } from "./others.js";
-import type { LMRouterConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../types/config.js";
+import type { ResponsesStore } from "../../../../utils/responses-store.js";
 
-export type OpenAIResponsesInputOptions = {
+export interface OpenAIResponsesInputOptions {
+  responsesStore: ResponsesStore;
   maxTokens?: number;
-};
+}
 
 export abstract class OpenAIResponsesAdapter extends LMRouterAdapter<
   ResponseCreateParamsBase,

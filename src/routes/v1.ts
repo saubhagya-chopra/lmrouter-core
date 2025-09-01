@@ -4,6 +4,7 @@
 import { Hono } from "hono";
 
 import { requireAuth } from "../middlewares/auth.js";
+import type { LMRouterSessionResponse } from "../types/api.js";
 import type { AuthBetterAuth, ContextEnv } from "../types/hono.js";
 import { getAuth } from "../utils/auth.js";
 import { getConfig } from "../utils/config.js";
@@ -42,7 +43,7 @@ v1Router.get("/session", requireAuth("better-auth"), (c) => {
   return c.json({
     session: auth.session,
     user: auth.user,
-  });
+  } as LMRouterSessionResponse);
 });
 
 export default v1Router;

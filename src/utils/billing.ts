@@ -8,36 +8,17 @@ import { HTTPException } from "hono/http-exception";
 import jsonLogic from "json-logic-js";
 import { Stripe } from "stripe";
 
-import {
-  getConfig,
-  type LMRouterConfigModelProviderPricing,
-} from "./config.js";
+import { getConfig } from "./config.js";
 import { getDb } from "./database.js";
-import {
-  balance,
-  ledger,
-  type LedgerMetadata,
-  type LedgerMetadataApiCallTimestamps,
-} from "../models/billing.js";
+import { balance, ledger } from "../models/billing.js";
+import type {
+  LMRouterApiCallUsage,
+  LMRouterLedgerMetadata,
+  LMRouterLedgerMetadataApiCallTimestamps,
+} from "../types/billing.js";
+import type { LMRouterConfigModelProviderPricing } from "../types/config.js";
 import type { ContextEnv } from "../types/hono.js";
 import { getRemoteIp } from "./utils.js";
-
-export interface LMRouterApiCallUsage {
-  service_tier?: string;
-  input?: number;
-  input_image?: number;
-  input_audio?: number;
-  output?: number;
-  output_audio?: number;
-  image?: number;
-  image_quality?: string;
-  image_size?: string;
-  web_search?: number;
-  code_interpreter?: number;
-  request?: number;
-  input_cache_reads?: number;
-  input_cache_writes?: number;
-}
 
 export const calculateCost = (
   usage?: LMRouterApiCallUsage,
@@ -61,6 +42,11 @@ export const calculateCost = (
       new Decimal(usage.input_audio ?? 0)
         .mul(pricing.input_audio ?? 0)
         .dividedBy(1000000),
+    );
+    cost = cost.plus(
+      new Decimal(usage.input_audio_time ?? 0)
+        .mul(pricing.input_audio_time ?? 0)
+        .dividedBy(60),
     );
     cost = cost.plus(
       new Decimal(usage.output ?? 0)
@@ -115,16 +101,17 @@ export const recordApiCall = async (
   c: Context<ContextEnv>,
   provider: string,
   status: number,
-  timestamps: LedgerMetadataApiCallTimestamps,
+  timestamps: LMRouterLedgerMetadataApiCallTimestamps,
   usage?: LMRouterApiCallUsage,
   pricing?: LMRouterConfigModelProviderPricing,
   error?: string,
+  stream?: boolean,
 ) => {
   if (!getConfig(c).auth.enabled || !c.var.auth) {
     return;
   }
 
-  const metadata: LedgerMetadata = {
+  const metadata: LMRouterLedgerMetadata = {
     type: "api-call",
     data: {
       api_key_id:
@@ -133,6 +120,7 @@ export const recordApiCall = async (
       provider,
       endpoint: c.req.path,
       status,
+      stream,
       error,
       timestamps,
       ip: getRemoteIp(c),
@@ -195,7 +183,7 @@ export const updateBilling = async (
   ownerType: string,
   ownerId: string,
   amount: Decimal,
-  metadata: LedgerMetadata,
+  metadata: LMRouterLedgerMetadata,
   c?: Context<ContextEnv>,
 ) => {
   await getDb(c).insert(ledger).values({

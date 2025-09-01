@@ -8,12 +8,12 @@ import { getConnInfo as getConnInfoNode } from "@hono/node-server/conninfo";
 
 import { recordApiCall } from "./billing.js";
 import { TimeKeeper } from "./chrono.js";
-import {
-  getConfig,
-  type LMRouterConfigModel,
-  type LMRouterConfigModelProvider,
-  type LMRouterConfigProvider,
-} from "./config.js";
+import { getConfig } from "./config.js";
+import type {
+  LMRouterConfigModel,
+  LMRouterConfigModelProvider,
+  LMRouterConfigProvider,
+} from "../types/config.js";
 import type { ContextEnv } from "../types/hono.js";
 
 export const getUptime = () => {

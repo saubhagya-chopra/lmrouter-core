@@ -10,11 +10,11 @@ import type {
 import { LMRouterAdapter } from "../../../adapter.js";
 import { OpenAIChatCompletionAnthropicAdapter } from "./anthropic.js";
 import { OpenAIChatCompletionOpenAIAdapter } from "./openai.js";
-import type { LMRouterConfigProvider } from "../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../types/config.js";
 
-export type OpenAIChatCompletionInputOptions = {
+export interface OpenAIChatCompletionInputOptions {
   maxTokens?: number;
-};
+}
 
 export type OpenAIChatCompletionAdapter = LMRouterAdapter<
   ChatCompletionCreateParamsBase,

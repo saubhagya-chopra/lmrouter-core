@@ -11,7 +11,7 @@ import { LMRouterAdapter } from "../../../../adapter.js";
 import { OpenAIImageEditFireworksAdapter } from "./fireworks.js";
 import { OpenAIImageEditGoogleAdapter } from "./google.js";
 import { OpenAIImageEditOpenAIAdapter } from "./openai.js";
-import type { LMRouterConfigProvider } from "../../../../../utils/config.js";
+import type { LMRouterConfigProvider } from "../../../../../types/config.js";
 
 export type OpenAIImageEditAdapter = LMRouterAdapter<
   ImageEditParamsBase,

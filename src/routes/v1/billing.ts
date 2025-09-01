@@ -6,6 +6,11 @@ import { Hono } from "hono";
 
 import { requireAuth } from "../../middlewares/auth.js";
 import { balance as balanceModel } from "../../models/billing.js";
+import type {
+  LMRouterBalanceResponse,
+  LMRouterCheckoutParams,
+  LMRouterCheckoutResponse,
+} from "../../types/api.js";
 import type { AuthBetterAuth, ContextEnv } from "../../types/hono.js";
 import { getDb } from "../../utils/database.js";
 import { getStripe } from "../../utils/stripe.js";
@@ -28,11 +33,12 @@ billingRouter.get("/balance", async (c) => {
   if (balance.length === 0) {
     return c.json({ error: { message: "Internal server error" } }, 500);
   }
-  return c.json({ balance: balance[0].balance });
+  return c.json({ balance: balance[0].balance } as LMRouterBalanceResponse);
 });
 
 billingRouter.post("/checkout", async (c) => {
-  const { amount, success_url } = await c.req.json();
+  const { amount, success_url } =
+    (await c.req.json()) as LMRouterCheckoutParams;
   if (typeof amount !== "number" || typeof success_url !== "string") {
     return c.json({ error: { message: "Bad request" } }, 400);
   }
@@ -43,7 +49,7 @@ billingRouter.post("/checkout", async (c) => {
     success_url,
   );
 
-  return c.json({ session_url: session.url });
+  return c.json({ session_url: session.url } as LMRouterCheckoutResponse);
 });
 
 export default billingRouter;

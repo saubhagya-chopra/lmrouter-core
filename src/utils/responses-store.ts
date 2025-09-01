@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 LMRouter Contributors
 
+import type { Context } from "hono";
 import type {
   Response,
   ResponseCreateParamsBase,
   ResponseInput,
 } from "openai/resources/responses/responses";
+import { Redis } from "@upstash/redis";
+
+import { getConfig } from "./config.js";
+import type { ContextEnv } from "../types/hono.js";
 
 interface ResponsesStoreItem {
   request: ResponseCreateParamsBase;
@@ -13,7 +18,7 @@ interface ResponsesStoreItem {
   fullContext: ResponseInput;
 }
 
-abstract class ResponsesStore {
+export abstract class ResponsesStore {
   abstract get(responseId: string): Promise<ResponsesStoreItem | null>;
 
   async set(
@@ -81,12 +86,40 @@ class InMemoryResponsesStore extends ResponsesStore {
   }
 }
 
+class UpstashRedisResponsesStore extends ResponsesStore {
+  private redis: Redis;
+
+  constructor(url: string, token: string) {
+    super();
+    this.redis = new Redis({ url, token });
+  }
+
+  async get(responseId: string): Promise<ResponsesStoreItem | null> {
+    return (await this.redis.get(responseId)) ?? null;
+  }
+
+  protected async setItem(item: ResponsesStoreItem): Promise<void> {
+    await this.redis.set(item.response.id, item);
+  }
+}
+
 export class ResponsesStoreFactory {
   private static storeCache: ResponsesStore | null = null;
 
-  static getStore(): ResponsesStore {
+  static getStore(c: Context<ContextEnv>): ResponsesStore {
     if (!this.storeCache) {
-      this.storeCache = new InMemoryResponsesStore();
+      const cfg = getConfig(c);
+      switch (cfg.responses_store.type) {
+        case "in_memory":
+          this.storeCache = new InMemoryResponsesStore();
+          break;
+        case "upstash_redis":
+          this.storeCache = new UpstashRedisResponsesStore(
+            cfg.responses_store.url,
+            cfg.responses_store.token,
+          );
+          break;
+      }
     }
     return this.storeCache;
   }

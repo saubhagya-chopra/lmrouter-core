@@ -44,6 +44,8 @@ chatRouter.post("/completions", async (c) => {
         timeKeeper.timestamps(),
         adapter.usage,
         providerCfg.pricing,
+        undefined,
+        false,
       );
       return c.json(completion);
     }
@@ -68,6 +70,8 @@ chatRouter.post("/completions", async (c) => {
         timeKeeper.timestamps(),
         adapter.usage,
         providerCfg.pricing,
+        undefined,
+        true,
       );
     });
   });
