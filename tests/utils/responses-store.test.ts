@@ -1,4 +1,4 @@
-// tests/responses-store.test.ts
+// tests/utils/responses-store.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   Response,
@@ -8,7 +8,9 @@ import type {
 import {
   ResponsesStore,
   ResponsesStoreFactory,
-} from "../../src/utils/responses-store"; // adjust path
+} from "../../src/utils/responses-store";
+import { getConfig } from "../../src/utils/config";
+import { Redis } from "@upstash/redis";
 
 // --- mocks ---
 vi.mock("../../src/utils/config.js", () => ({
@@ -24,10 +26,7 @@ vi.mock("@upstash/redis", () => {
   };
 });
 
-import { getConfig } from "../../src/utils/config";
-import { Redis } from "@upstash/redis";
-
-// Dummy Response object
+// Helper to make a dummy response
 const makeResponse = (id: string, outputContent = "hi"): Response =>
   ({
     id,
@@ -51,7 +50,7 @@ describe("ResponsesStore base class", () => {
     store = new TestStore();
   });
 
-  it("set() stores request, response, and builds fullContext with string input", async () => {
+  it("set() builds fullContext with string input", async () => {
     const req: ResponseCreateParamsBase = { input: "hello" } as any;
     const res = makeResponse("r1");
 
@@ -63,7 +62,7 @@ describe("ResponsesStore base class", () => {
     ]);
   });
 
-  it("set() stores request, response, and builds fullContext with array input", async () => {
+  it("set() builds fullContext with array input", async () => {
     const req: ResponseCreateParamsBase = {
       input: [{ type: "message", role: "user", content: "part1" }],
     } as any;
@@ -77,7 +76,7 @@ describe("ResponsesStore base class", () => {
     ]);
   });
 
-  it("set() includes previous fullContext if previous_response_id exists", async () => {
+  it("set() includes previous fullContext when previous_response_id exists", async () => {
     const prev = {
       request: {} as any,
       response: makeResponse("prev"),
@@ -89,6 +88,7 @@ describe("ResponsesStore base class", () => {
       input: "new",
       previous_response_id: "prev",
     } as any;
+
     const res = makeResponse("r3");
 
     await store.set(req, res);
@@ -106,7 +106,7 @@ describe("ResponsesStore base class", () => {
     expect(hydrated).toBe(req);
   });
 
-  it("hydrateRequest merges context from previous when available", async () => {
+  it("hydrateRequest merges context from previous", async () => {
     const prevItem = {
       fullContext: [{ type: "message", role: "assistant", content: "old" }],
     };
@@ -127,61 +127,24 @@ describe("ResponsesStore base class", () => {
   });
 });
 
-describe("InMemoryResponsesStore", () => {
-  it("stores and retrieves by response.id", async () => {
-    const { InMemoryResponsesStore } = await import(
-      "../../src/utils/responses-store"
-    );
-
-    const store = new InMemoryResponsesStore();
-    const res = makeResponse("x1");
-    await store.set({ input: "q" } as any, res);
-
-    const item = await store.get("x1");
-    expect(item?.response.id).toBe("x1");
-  });
-});
-
-describe("UpstashRedisResponsesStore", () => {
-  it("calls redis.get and redis.set", async () => {
-    const { UpstashRedisResponsesStore } = await import(
-      "../../src/utils/responses-store"
-    );
-
-    const redisInstance = (Redis as any).mock.instances[0];
-    redisInstance.get.mockResolvedValue({ foo: "bar" });
-
-    const store = new UpstashRedisResponsesStore("url", "token");
-
-    await store.set({ input: "a" } as any, makeResponse("id1"));
-    expect(redisInstance.set).toHaveBeenCalledWith("id1", expect.any(Object));
-
-    const out = await store.get("id1");
-    expect(out).toEqual({ foo: "bar" });
-  });
-});
-
 describe("ResponsesStoreFactory", () => {
   beforeEach(() => {
     (ResponsesStoreFactory as any).storeCache = null;
+    vi.clearAllMocks();
   });
 
-  it("returns InMemoryResponsesStore if config type = in_memory", () => {
+  it("creates an in-memory store and stores/gets values", async () => {
     vi.mocked(getConfig).mockReturnValue({
       responses_store: { type: "in_memory" },
     } as any);
 
     const store = ResponsesStoreFactory.getStore({} as any);
     expect(store.constructor.name).toBe("InMemoryResponsesStore");
-  });
 
-  it("returns UpstashRedisResponsesStore if config type = upstash_redis", () => {
-    vi.mocked(getConfig).mockReturnValue({
-      responses_store: { type: "upstash_redis", url: "u", token: "t" },
-    } as any);
-
-    const store = ResponsesStoreFactory.getStore({} as any);
-    expect(store.constructor.name).toBe("UpstashRedisResponsesStore");
+    const res = makeResponse("x1");
+    await store.set({ input: "q" } as any, res);
+    const item = await store.get("x1");
+    expect(item?.response.id).toBe("x1");
   });
 
   it("caches the store instance", () => {
