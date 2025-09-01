@@ -30,7 +30,7 @@
     "db:generate": "NODE_OPTIONS='--import tsx' LMROUTER_CONFIG=$(base64 -w0 config/config.yaml) drizzle-kit generate",
     "db:migrate": "LMROUTER_CONFIG=$(base64 -w0 config/config.yaml) drizzle-kit migrate",
     "prepublishOnly": "npm run build",
-    "test": "vitest",
+    "test": "vitest --run",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
